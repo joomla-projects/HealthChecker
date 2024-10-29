@@ -91,7 +91,7 @@ class Form implements CurrentUserInterface
      * @var    array
      * @since  __DEPLOY_VERSION__
      */
-    protected $controlFields = [];
+    protected $controlFields = ['joomla.form.token' => []];
 
     /**
      * Form instances.
@@ -1937,7 +1937,9 @@ class Form implements CurrentUserInterface
      */
     public function renderControlFields(): string
     {
-        $html = [];
+        $html     = [];
+        $hasToken = \array_key_exists('joomla.form.token', $this->controlFields);
+        unset($this->controlFields['joomla.form.token']);
 
         foreach ($this->controlFields as $n => $v) {
             // Check for attributes
@@ -1954,8 +1956,10 @@ class Form implements CurrentUserInterface
             $html[] = '<input type="hidden" name="' . htmlspecialchars($n) . '" value="' . htmlspecialchars($v['value']) . '" ' . $attrStr . '>';
         }
 
-        // The Token should be added in any case
-        $html[] = HTMLHelper::_('form.token');
+        // Add the form token
+        if ($hasToken) {
+            $html[] = HTMLHelper::_('form.token');
+        }
 
         return implode("\n", $html);
     }
