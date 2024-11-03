@@ -25,6 +25,9 @@ use Joomla\Filesystem\Path;
  * Base install script for use by extensions providing helper methods for common behaviours.
  *
  * @since  3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Use InstallerScriptTrait instead.
  */
 class InstallerScript
 {
@@ -111,6 +114,9 @@ class InstallerScript
      * @return  boolean  True on success
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Use InstallerScriptTrait::preflight instead.
      */
     public function preflight($type, $parent)
     {
@@ -169,6 +175,9 @@ class InstallerScript
      * @return  array  An array of ID's of the extension
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Will be removed without replacement.
      */
     public function getInstances($isModule)
     {
@@ -203,6 +212,9 @@ class InstallerScript
      * @return  string  The parameter desired
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Will be removed without replacement.
      */
     public function getParam($name, $id = 0)
     {
@@ -228,6 +240,9 @@ class InstallerScript
      * @return  boolean  True on success
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Will be removed without replacement.
      */
     public function setParams($paramArray = null, $type = 'edit', $id = 0)
     {
@@ -285,6 +300,9 @@ class InstallerScript
      * @return  array  Associated array containing data from the cell
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Will be removed without replacement.
      */
     public function getItemArray($element, $table, $column, $identifier)
     {
@@ -313,6 +331,9 @@ class InstallerScript
      * @return  void
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Use InstallerScriptTrait::removeFiles instead.
      */
     public function removeFiles()
     {
@@ -339,6 +360,9 @@ class InstallerScript
      * @return  void
      *
      * @since   3.6
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Will be removed without replacement. Use console plugins instead.
      */
     public function moveCliFiles()
     {
@@ -363,6 +387,9 @@ class InstallerScript
      *
      * @throws \Exception
      * @since   4.0.0
+     *
+     * @deprecated __DEPLOY_VERSION__ will be removed in 7.0
+     *             Use InstallerScriptTrait::addDashboardMenu instead.
      */
     public function addDashboardMenu(string $dashboard, string $preset)
     {
