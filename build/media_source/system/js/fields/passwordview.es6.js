@@ -5,78 +5,86 @@
 ((document) => {
   'use strict';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    [].slice.call(document.querySelectorAll('input[type="password"]')).forEach((input) => {
-      const toggleButton = input.parentNode.querySelector('.input-password-toggle');
+  function togglePassword() {
+    [].slice
+      .call(document.querySelectorAll('input[type="password"]'))
+      .forEach((input) => {
+        const toggleButton = input.parentNode.querySelector('.input-password-toggle');
 
-      if (toggleButton) {
-        toggleButton.addEventListener('click', () => {
-          const icon = toggleButton.firstElementChild;
-          const srText = toggleButton.lastElementChild;
+        const hasClickListener = toggleButton.getAttribute('clickListener') === 'true';
 
-          if (input.type === 'password') {
-            // Update the icon class
-            icon.classList.remove('icon-eye');
-            icon.classList.add('icon-eye-slash');
+        if (toggleButton && !hasClickListener) {
+          toggleButton.setAttribute('clickListener', 'true');
+          toggleButton.addEventListener('click', () => {
+            const icon = toggleButton.firstElementChild;
+            const srText = toggleButton.lastElementChild;
 
-            // Update the input type
-            input.type = 'text';
+            if (input.type === 'password') {
+              // Update the icon class
+              icon.classList.remove('icon-eye');
+              icon.classList.add('icon-eye-slash');
 
-            // Focus the input field
-            input.focus();
+              // Update the input type
+              input.type = 'text';
 
-            // Update the text for screenreaders
-            srText.innerText = Joomla.Text._('JHIDEPASSWORD');
-          } else if (input.type === 'text') {
-            // Update the icon class
-            icon.classList.add('icon-eye');
-            icon.classList.remove('icon-eye-slash');
+              // Focus the input field
+              input.focus();
 
-            // Update the input type
-            input.type = 'password';
+              // Update the text for screenreaders
+              srText.innerText = Joomla.Text._('JHIDEPASSWORD');
+            } else if (input.type === 'text') {
+              // Update the icon class
+              icon.classList.add('icon-eye');
+              icon.classList.remove('icon-eye-slash');
 
-            // Focus the input field
-            input.focus();
+              // Update the input type
+              input.type = 'password';
 
-            // Update the text for screenreaders
-            srText.innerText = Joomla.Text._('JSHOWPASSWORD');
-          }
-        });
-      }
+              // Focus the input field
+              input.focus();
 
-      const modifyButton = input.parentNode.querySelector('.input-password-modify');
+              // Update the text for screenreaders
+              srText.innerText = Joomla.Text._('JSHOWPASSWORD');
+            }
+          });
+        }
 
-      if (modifyButton) {
-        modifyButton.addEventListener('click', () => {
-          const lock = !modifyButton.classList.contains('locked');
+        const modifyButton = input.parentNode.querySelector('.input-password-modify');
 
-          if (lock === true) {
-            // Add lock
-            modifyButton.classList.add('locked');
+        if (modifyButton) {
+          modifyButton.addEventListener('click', () => {
+            const lock = !modifyButton.classList.contains('locked');
 
-            // Reset value to empty string
-            input.value = '';
+            if (lock === true) {
+              // Add lock
+              modifyButton.classList.add('locked');
 
-            // Disable the field
-            input.setAttribute('disabled', '');
+              // Reset value to empty string
+              input.value = '';
 
-            // Update the text
-            modifyButton.innerText = Joomla.Text._('JMODIFY');
-          } else {
-            // Remove lock
-            modifyButton.classList.remove('locked');
+              // Disable the field
+              input.setAttribute('disabled', '');
 
-            // Enable the field
-            input.removeAttribute('disabled');
+              // Update the text
+              modifyButton.innerText = Joomla.Text._('JMODIFY');
+            } else {
+              // Remove lock
+              modifyButton.classList.remove('locked');
 
-            // Focus the input field
-            input.focus();
+              // Enable the field
+              input.removeAttribute('disabled');
 
-            // Update the text
-            modifyButton.innerText = Joomla.Text._('JCANCEL');
-          }
-        });
-      }
-    });
-  });
+              // Focus the input field
+              input.focus();
+
+              // Update the text
+              modifyButton.innerText = Joomla.Text._('JCANCEL');
+            }
+          });
+        }
+      });
+  }
+
+  document.addEventListener('joomla:updated', togglePassword);
+  document.addEventListener('DOMContentLoaded', togglePassword);
 })(document);
