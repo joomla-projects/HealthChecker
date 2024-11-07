@@ -43,4 +43,20 @@ class AdministratorMenuItem extends MenuItem
      * @since  4.0.0
      */
     public $iconImage;
+
+    /**
+     * The class of the menu item
+     *
+     * @var string
+     * @since __DEPLOY_VERSION__
+     */
+    public $class = '';
+
+    /**
+     * The element type of the menu item
+     *
+     * @var string
+     * @since __DEPLOY_VERSION__
+     */
+    public $element = '';
 }
