@@ -20,7 +20,7 @@
     const qr = qrcode(0, 'H');
     qr.addData(qrData);
     qr.make();
-    elTarget.innerHTML = qr.createImgTag(4);
+    elTarget.innerHTML = Joomla.sanitizeHtml(qr.createImgTag(4));
   });
 // eslint-disable-next-line no-undef
 })(Joomla, document, qrcode);
