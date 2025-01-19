@@ -38,7 +38,7 @@ return new class () implements ServiceProviderInterface {
                     (array) PluginHelper::getPlugin('quickicon', 'endoflife')
                 );
                 $plugin->setApplication(Factory::getApplication());
-                
+
                 return $plugin;
             }
         );
