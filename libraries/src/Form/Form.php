@@ -89,9 +89,9 @@ class Form implements CurrentUserInterface
      * Array containing name => [value => value, attributes => []] for each field.
      *
      * @var    array
-     * @since  __DEPLOY_VERSION__
+     * @since  5.3.0
      */
-    protected $controlFields = [];
+    protected $controlFields = ['joomla.form.token' => []];
 
     /**
      * Form instances.
@@ -1888,7 +1888,7 @@ class Form implements CurrentUserInterface
      *
      * @return static
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  5.3.0
      */
     public function addControlField(string $name, string $value = '', array $attributes = []): static
     {
@@ -1907,7 +1907,7 @@ class Form implements CurrentUserInterface
      *
      * @return static
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  5.3.0
      */
     public function removeControlField(string $name): static
     {
@@ -1921,7 +1921,7 @@ class Form implements CurrentUserInterface
      *
      * @return array
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  5.3.0
      */
     public function getControlFields(): array
     {
@@ -1933,11 +1933,13 @@ class Form implements CurrentUserInterface
      *
      * @return string
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  5.3.0
      */
     public function renderControlFields(): string
     {
-        $html = [];
+        $html     = [];
+        $hasToken = \array_key_exists('joomla.form.token', $this->controlFields);
+        unset($this->controlFields['joomla.form.token']);
 
         foreach ($this->controlFields as $n => $v) {
             // Check for attributes
@@ -1954,8 +1956,10 @@ class Form implements CurrentUserInterface
             $html[] = '<input type="hidden" name="' . htmlspecialchars($n) . '" value="' . htmlspecialchars($v['value']) . '" ' . $attrStr . '>';
         }
 
-        // The Token should be added in any case
-        $html[] = HTMLHelper::_('form.token');
+        // Add the form token
+        if ($hasToken) {
+            $html[] = HTMLHelper::_('form.token');
+        }
 
         return implode("\n", $html);
     }

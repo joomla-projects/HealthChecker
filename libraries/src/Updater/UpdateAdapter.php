@@ -10,10 +10,12 @@
 namespace Joomla\CMS\Updater;
 
 use Joomla\CMS\Adapter\AdapterInstance;
+use Joomla\CMS\Event\Installer\BeforeUpdateSiteDownloadEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Version;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
@@ -245,10 +247,21 @@ abstract class UpdateAdapter extends AdapterInstance
         $httpOption = new Registry();
         $httpOption->set('userAgent', $version->getUserAgent('Joomla', true, false));
 
-        // JHttp transport throws an exception when there's no response.
+        $headers    = [];
+        $dispatcher = Factory::getApplication()->getDispatcher();
+        PluginHelper::importPlugin('installer', null, true, $dispatcher);
+        $event = new BeforeUpdateSiteDownloadEvent('onInstallerBeforeUpdateSiteDownload', [
+            'url'     => $url,
+            'headers' => $headers,
+        ]);
+        $dispatcher->dispatch('onInstallerBeforeUpdateSiteDownload', $event);
+        $url     = $event->getArgument('url', $url);
+        $headers = $event->getArgument('headers', $headers);
+
+        // Http transport throws an exception when there's no response.
         try {
             $http     = HttpFactory::getHttp($httpOption);
-            $response = $http->get($url, [], 20);
+            $response = $http->get($url, $headers, 20);
         } catch (\RuntimeException $e) {
             $response = null;
         }

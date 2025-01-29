@@ -121,6 +121,11 @@ class ListField extends FormField
                 continue;
             }
 
+            // Requires workflow
+            if (\in_array('workflow', $requires) && !ComponentHelper::getParams('com_content')->get('workflow_enabled')) {
+                continue;
+            }
+
             $value = (string) $option['value'];
             $text  = trim((string) $option) != '' ? trim((string) $option) : $value;
 

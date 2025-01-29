@@ -773,15 +773,10 @@ class BaseController implements ControllerInterface, DispatcherAwareInterface, L
                 $menu = $this->app->getMenu();
 
                 if (\is_object($menu) && $item = $menu->getActive()) {
-                    // Let's get the application object and set menu information if it's available
-                    $menu = $this->app->getMenu();
+                    $params = $menu->getParams($item->id);
 
-                    if (\is_object($menu) && $item = $menu->getActive()) {
-                        $params = $menu->getParams($item->id);
-
-                        // Set default state data
-                        $model->setState('parameters.menu', $params);
-                    }
+                    // Set default state data
+                    $model->setState('parameters.menu', $params);
                 }
             }
         }

@@ -105,6 +105,9 @@ final class Blog extends CMSPlugin
         $language   = Multilanguage::isEnabled() ? $this->getApplication()->getLanguage()->getTag() : '*';
         $langSuffix = ($language !== '*') ? ' (' . $language . ')' : '';
 
+        // Disable language debug to prevent debug_lang_const being added to the string
+        $this->getApplication()->getLanguage()->setDebug(false);
+
         /** @var \Joomla\Component\Tags\Administrator\Model\TagModel $model */
         $modelTag = $this->getApplication()->bootComponent('com_tags')->getMVCFactory()
             ->createModel('Tag', 'Administrator', ['ignore_request' => true]);
@@ -794,6 +797,9 @@ final class Blog extends CMSPlugin
         $language   = Multilanguage::isEnabled() ? $this->getApplication()->getLanguage()->getTag() : '*';
         $langSuffix = ($language !== '*') ? ' (' . $language . ')' : '';
 
+        // Disable language debug to prevent debug_lang_const being added to the string
+        $this->getApplication()->getLanguage()->setDebug(false);
+
         // Create the menu types.
         $menuTable = new \Joomla\Component\Menus\Administrator\Table\MenuTypeTable($this->getDatabase());
         $menuTypes = [];
@@ -1342,6 +1348,9 @@ final class Blog extends CMSPlugin
         // Detect language to be used.
         $language   = Multilanguage::isEnabled() ? $this->getApplication()->getLanguage()->getTag() : '*';
         $langSuffix = ($language !== '*') ? ' (' . $language . ')' : '';
+
+        // Disable language debug to prevent debug_lang_const being added to the string
+        $this->getApplication()->getLanguage()->setDebug(false);
 
         // Add Include Paths.
         /** @var \Joomla\Component\Modules\Administrator\Model\ModuleModel $model */
@@ -1896,6 +1905,9 @@ final class Blog extends CMSPlugin
         // Detect language to be used.
         $language   = Multilanguage::isEnabled() ? $this->getApplication()->getLanguage()->getTag() : '*';
         $langSuffix = ($language !== '*') ? ' (' . $language . ')' : '';
+
+        // Disable language debug to prevent debug_lang_const being added to the string
+        $this->getApplication()->getLanguage()->setDebug(false);
 
         foreach ($menuItems as $menuItem) {
             // Reset item.id in model state.

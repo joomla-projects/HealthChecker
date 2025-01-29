@@ -1,0 +1,1 @@
+ALTER TABLE "#__action_logs_users" ADD COLUMN "exclude_self" integer DEFAULT 0 NOT NULL;

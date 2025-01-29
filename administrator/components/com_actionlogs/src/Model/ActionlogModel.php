@@ -55,7 +55,13 @@ class ActionlogModel extends BaseDatabaseModel implements UserFactoryAwareInterf
             @trigger_error(\sprintf('User ID must be an integer in %s.', __METHOD__), E_USER_DEPRECATED);
         }
 
-        $user   = $userId ? $this->getUserFactory()->loadUserById($userId) : $this->getCurrentUser();
+        try {
+            $user = $userId ? $this->getUserFactory()->loadUserById($userId) : $this->getCurrentUser();
+        } catch (\UnexpectedValueException $e) {
+            @trigger_error(\sprintf('UserFactory must be set, this will not be caught anymore in 7.0.'), E_USER_DEPRECATED);
+            $user = Factory::getUser($userId);
+        }
+
         $db     = $this->getDatabase();
         $date   = Factory::getDate();
         $params = ComponentHelper::getComponent('com_actionlogs')->getParams();
@@ -120,7 +126,7 @@ class ActionlogModel extends BaseDatabaseModel implements UserFactoryAwareInterf
         $query = $db->getQuery(true);
 
         $query
-            ->select($db->quoteName(['u.email', 'l.extensions']))
+            ->select($db->quoteName(['u.email', 'u.username', 'l.extensions', 'l.exclude_self']))
             ->from($db->quoteName('#__users', 'u'))
             ->where($db->quoteName('u.block') . ' = 0')
             ->join(
@@ -136,6 +142,10 @@ class ActionlogModel extends BaseDatabaseModel implements UserFactoryAwareInterf
         $recipients = [];
 
         foreach ($users as $user) {
+            if ($user->username === $this->getCurrentUser()->username && $user->exclude_self) {
+                continue;
+            }
+
             $extensions = json_decode($user->extensions, true);
 
             if ($extensions && \in_array(strtok($context, '.'), $extensions)) {

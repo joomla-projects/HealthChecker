@@ -711,13 +711,6 @@ class Indexer
         // Get the database object.
         $db         = $this->db;
         $serverType = strtolower($db->getServerType());
-        $query      = $db->getQuery(true);
-
-        // Delete all orphaned terms.
-        $query->delete($db->quoteName('#__finder_terms'))
-            ->where($db->quoteName('links') . ' <= 0');
-        $db->setQuery($query);
-        $db->execute();
 
         // Delete all broken links. (Links missing the object)
         $query = $db->getQuery(true)
@@ -735,6 +728,25 @@ class Indexer
             ->where($db->quoteName('link_id') . ' NOT IN (' . $query2 . ')');
         $db->setQuery($query);
         $db->execute();
+
+        // Update count of links in terms table
+        $query  = $db->getQuery(true);
+        $query2 = $db->getQuery(true);
+        $query2->select('COUNT(lt.link_id)')
+            ->from($db->quoteName('#__finder_links_terms', 'lt'))
+            ->where($db->quoteName('lt.term_id') . ' = ' . $db->quoteName('t.term_id'));
+        $query->update($db->quoteName('#__finder_terms', 't'))
+            ->set($db->quoteName('t.links') . ' = (' . $query2 . ')');
+        $db->setQuery($query);
+        $db->execute();
+
+        // Delete all orphaned terms.
+        $query = $db->getQuery(true);
+        $query->delete($db->quoteName('#__finder_terms'))
+            ->where($db->quoteName('links') . ' <= 0');
+        $db->setQuery($query);
+        $db->execute();
+
 
         // Delete all orphaned terms
         $query2 = $db->getQuery(true)

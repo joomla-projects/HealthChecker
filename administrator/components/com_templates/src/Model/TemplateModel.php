@@ -489,6 +489,7 @@ class TemplateModel extends FormModel
         $componentPath = Path::clean($client->path . '/components/');
         $modulePath    = Path::clean($client->path . '/modules/');
         $layoutPath    = Path::clean(JPATH_ROOT . '/layouts/');
+        $pluginPath    = Path::clean(JPATH_ROOT . '/plugins/');
 
         // For modules
         if (stristr($type, 'mod_') !== false) {
@@ -496,6 +497,18 @@ class TemplateModel extends FormModel
             $htmlPath = Path::clean($modulePath . $folder . '/tmpl/');
             $fileName = $this->getSafeName($fileName);
             $coreFile = Path::find($htmlPath, $fileName);
+
+            return $coreFile;
+        }
+
+        // For plugins
+        if (stristr($type, 'plg_') !== false) {
+            $pluginFolder = explode('_', $explodeArray['2']);
+            $folder       = $pluginFolder['1'];
+            $subFolder    = $pluginFolder['2'];
+            $htmlPath     = Path::clean($pluginPath . $folder . '/' . $subFolder . '/tmpl/');
+            $fileName     = $this->getSafeName($fileName);
+            $coreFile     = Path::find($htmlPath, $fileName);
 
             return $coreFile;
         }

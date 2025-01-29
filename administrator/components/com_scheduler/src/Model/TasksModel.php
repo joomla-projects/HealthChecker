@@ -137,6 +137,7 @@ class TasksModel extends ListModel
                     $db->quoteName('a.priority'),
                     $db->quoteName('a.ordering'),
                     $db->quoteName('a.note'),
+                    $db->quoteName('a.created_by'),
                     $db->quoteName('a.checked_out'),
                     $db->quoteName('a.checked_out_time'),
                 ]

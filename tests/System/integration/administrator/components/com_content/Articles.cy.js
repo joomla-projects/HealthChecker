@@ -94,4 +94,47 @@ describe('Test in backend that the articles list', () => {
       cy.get('#system-message-container').contains('Article deleted.').should('exist');
     });
   });
+
+  it('can select articles with multiselect', () => {
+    cy.db_createArticle({ title: 'Test article 1' })
+      .then(() => cy.db_createArticle({ title: 'Test article 2' }))
+      .then(() => cy.db_createArticle({ title: 'Test article 3' }))
+      .then(() => cy.db_createArticle({ title: 'Test article 4' }))
+      .then(() => cy.db_createArticle({ title: 'Test article 5' }))
+      .then(() => {
+        cy.reload();
+        cy.searchForItem('Test article');
+        cy.get('#cb2').click();
+        cy.get('body').type('{shift}', { release: false });
+        cy.get('#cb4').click();
+
+        cy.clickToolbarButton('Action');
+        cy.clickToolbarButton('Unpublish');
+
+        cy.checkForSystemMessage('3 articles unpublished.');
+
+        cy.get('thead input[name=\'checkall-toggle\']').should('not.be.checked');
+        cy.get('#cb0').click();
+        cy.get('body').type('{shift}', { release: false });
+        cy.get('#cb4').click();
+        cy.get('thead input[name=\'checkall-toggle\']').should('be.checked');
+
+        cy.clickToolbarButton('Action');
+        cy.clickToolbarButton('Unpublish');
+
+        cy.checkForSystemMessage('2 articles unpublished.');
+
+        cy.checkAllResults();
+        cy.get('#cb2').click();
+        cy.get('body').type('{shift}', { release: false });
+        cy.get('#cb0').click();
+        cy.get('body').type('{shift}');
+        cy.get('#cb4').click();
+
+        cy.clickToolbarButton('Action');
+        cy.clickToolbarButton('Publish');
+
+        cy.checkForSystemMessage('Article published.');
+      });
+  });
 });

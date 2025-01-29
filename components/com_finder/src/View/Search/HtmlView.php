@@ -208,8 +208,9 @@ class HtmlView extends BaseHtmlView implements SiteRouterAwareInterface
         if (\is_array($this->results)) {
             $dispatcher = $this->getDispatcher();
 
-            // Import Finder plugins
+            // Import Content and Finder plugins
             PluginHelper::importPlugin('finder', null, true, $dispatcher);
+            PluginHelper::importPlugin('content', null, true, $dispatcher);
 
             foreach ($this->results as $result) {
                 $dispatcher->dispatch('onFinderResult', new ResultEvent('onFinderResult', [

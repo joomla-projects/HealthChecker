@@ -163,6 +163,7 @@ The Joomla System Tests come with some convenient [Cypress Tasks](https://docs.c
 - **cleanupDB** – Deletes the inserted items from the database
 - **writeRelativeFile** – Writes a file relative to the CMS root folder
 - **deleteRelativePath** – Deletes a file or folder relative to the CMS root folder
+- **copyRelativeFile** – Copies a file relative to the CMS root folder
 - **startMailServer** – Starts the smtp-tester SMTP server
 - **getMails** – Get received mails from smtp-tester
 - **clearEmails** – Clear all smtp-tester received mails
@@ -196,7 +197,7 @@ The Database Commands create items in the database like articles or users. They 
 cy.db_createArticle({ title: 'automated test article' }).then((id) => { ... })`
 ```
 
-The following commands are available and are served by the file [tests/System/support/commands/db.js](/tests/System/support/commands/db.js):
+The following commands are available and are served by the file [tests/System/support/commands/db.mjs](/tests/System/support/commands/db.mjs):
 
 - **db_createArticle** – Creates an article and returns the id
 - **db_createBanner** – Creates a banner and returns the id
@@ -229,7 +230,7 @@ cy.api_get('/content/articles').then((response) => { ... })`
 ```
 The response is an object from the [Cypress request command](https://docs.cypress.io/api/commands/request).
 The following commands are available and are served by the file
-[tests/System/support/commands/api.js](/tests/System/support/commands/api.js):
+[tests/System/support/commands/api.mjs](/tests/System/support/commands/api.mjs):
 
 - **api_get** – HTTP GET request for given path
 - **api_post** – HTTP POST request for given path and body

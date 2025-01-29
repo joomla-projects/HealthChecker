@@ -50,7 +50,7 @@ class HtmlView extends BaseHtmlView
      *
      * @var    object
      *
-     * @since  __DEPLOY_VERSION__
+     * @since  5.3.0
      */
     protected $state;
 

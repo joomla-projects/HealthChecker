@@ -94,4 +94,47 @@ describe('Test in backend that the contacts list', () => {
       cy.get('#system-message-container').contains('Contact deleted.').should('exist');
     });
   });
+
+  it('can select contacts with multiselect', () => {
+    cy.db_createContact({ name: 'Test contact 1' })
+      .then(() => cy.db_createContact({ name: 'Test contact 2' }))
+      .then(() => cy.db_createContact({ name: 'Test contact 3' }))
+      .then(() => cy.db_createContact({ name: 'Test contact 4' }))
+      .then(() => cy.db_createContact({ name: 'Test contact 5' }))
+      .then(() => {
+        cy.reload();
+        cy.searchForItem('Test contact');
+        cy.get('#cb1').click();
+        cy.get('body').type('{shift}', { release: false });
+        cy.get('#cb3').click();
+
+        cy.clickToolbarButton('Action');
+        cy.clickToolbarButton('Unpublish');
+
+        cy.checkForSystemMessage('3 contacts unpublished.');
+
+        cy.get('thead input[name=\'checkall-toggle\']').should('not.be.checked');
+        cy.get('#cb0').click();
+        cy.get('body').type('{shift}', { release: false });
+        cy.get('#cb4').click();
+        cy.get('thead input[name=\'checkall-toggle\']').should('be.checked');
+
+        cy.clickToolbarButton('Action');
+        cy.clickToolbarButton('Unpublish');
+
+        cy.checkForSystemMessage('2 contacts unpublished.');
+
+        cy.checkAllResults();
+        cy.get('#cb2').click();
+        cy.get('body').type('{shift}', { release: false });
+        cy.get('#cb4').click();
+        cy.get('body').type('{shift}');
+        cy.get('#cb0').click();
+
+        cy.clickToolbarButton('Action');
+        cy.clickToolbarButton('Publish');
+
+        cy.checkForSystemMessage('Contact published.');
+      });
+  });
 });
