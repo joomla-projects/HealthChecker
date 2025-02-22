@@ -128,6 +128,8 @@ class HtmlView extends BaseHtmlView
                         $icon = 'icon-wrench';
                     } elseif ($parts[0] === 'help') {
                         $icon = 'icon-info-circle';
+                    } elseif ($parts[0] === 'health_checker') {
+                        $icon = 'icon-heart';
                     } elseif ($lang->hasKey($keyIcon)) {
                         $icon = Text::_($keyIcon);
                     } else {

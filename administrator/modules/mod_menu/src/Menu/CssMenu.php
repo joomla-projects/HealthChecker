@@ -288,7 +288,7 @@ class CssMenu
             $item->icon  = $item->icon ?? '';
 
             // Whether this scope can be displayed. Applies only to preset items. Db driven items should use un/published state.
-            if (($item->scope === 'help' && $this->params->get('showhelp', 1) == 0) || ($item->scope === 'edit' && !$this->params->get('shownew', 1))) {
+            if (($item->scope === 'healthchecker' && $this->params->get('showhealthchecker', 1) == 0) ||($item->scope === 'help' && $this->params->get('showhelp', 1) == 0) || ($item->scope === 'edit' && !$this->params->get('shownew', 1))) {
                 $parent->removeChild($item);
                 continue;
             }
@@ -355,6 +355,17 @@ class CssMenu
 
                 list($assetName) = isset($query['context']) ? explode('.', $query['context'], 2) : ['com_fields'];
             } elseif ($item->element === 'com_cpanel' && $item->link === 'index.php') {
+                continue;
+            } elseif (
+                $item->link === 'index.php?option=com_cpanel&view=health_checker'
+                || $item->link === 'index.php?option=com_cpanel&view=cpanel&dashboard=health_checker'
+            ) {
+                if ($this->params->get('showhealthchecker', 1)) {
+                    continue;
+                }
+
+                // Exclude help menu item if set such in mod_menu
+                $parent->removeChild($item);
                 continue;
             } elseif (
                 $item->link === 'index.php?option=com_cpanel&view=help'
