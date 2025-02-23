@@ -329,6 +329,14 @@
 	/>
 
 	<menuitem
+		title="MOD_MENU_HEALTH_CHECKER"
+		type="component"
+		element="com_cpanel"
+		class="class:heart"
+		link="index.php?option=com_cpanel&amp;view=cpanel&amp;dashboard=health_checker"
+	/>
+
+	<menuitem
 		title="MOD_MENU_HELP"
 		type="component"
 		element="com_cpanel"
