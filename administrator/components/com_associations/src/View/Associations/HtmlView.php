@@ -140,7 +140,7 @@ class HtmlView extends BaseHtmlView
         } elseif ($this->state->get('itemtype') != '' && $this->state->get('language') != '') {
             $type = null;
 
-            list($extensionName, $typeName) = explode('.', $this->state->get('itemtype'), 2);
+            [$extensionName, $typeName] = explode('.', $this->state->get('itemtype'), 2);
 
             $extension = AssociationsHelper::getSupportedExtension($extensionName);
 

@@ -574,7 +574,7 @@ class TemplateModel extends FormModel
      */
     private function getSafeName($name)
     {
-        if (strpos($name, '-') !== false && preg_match('/[0-9]/', $name)) {
+        if (str_contains($name, '-') && preg_match('/[0-9]/', $name)) {
             // Get the extension
             $extension = File::getExt($name);
 
@@ -1101,7 +1101,7 @@ class TemplateModel extends FormModel
                         $path = $folder . '/' . $view . '/tmpl';
 
                         // The new scheme, the views are directly in the component/tmpl folder
-                        if (!is_dir($path) && substr($folder, -4) == 'tmpl') {
+                        if (!is_dir($path) && str_ends_with($folder, 'tmpl')) {
                             $path = $folder . '/' . $view;
                         }
 

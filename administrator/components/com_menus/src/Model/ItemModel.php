@@ -278,9 +278,9 @@ class ItemModel extends AdminModel
             $table->home  = 0;
 
             // Alter the title & alias
-            list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->alias, $table->title);
-            $table->title        = $title;
-            $table->alias        = $alias;
+            [$title, $alias] = $this->generateNewTitle($table->parent_id, $table->alias, $table->title);
+            $table->title    = $title;
+            $table->alias    = $alias;
 
             // Check the row.
             if (!$table->check()) {
@@ -974,7 +974,7 @@ class ItemModel extends AdminModel
         if ($pk) {
             $table = $this->getTable();
             $table->load($pk);
-            $forcedClientId = isset($table->client_id) ? $table->client_id : $forcedClientId;
+            $forcedClientId = $table->client_id ?? $forcedClientId;
         }
 
         if (isset($forcedClientId) && $forcedClientId != $clientId) {
@@ -1109,7 +1109,7 @@ class ItemModel extends AdminModel
                 // If custom layout, get the xml file from the template folder
                 // template folder is first part of file name -- template:folder
                 if (!$formFile && (strpos($layout, ':') > 0)) {
-                    list($altTmpl, $altLayout) = explode(':', $layout);
+                    [$altTmpl, $altLayout] = explode(':', $layout);
 
                     $templatePath = Path::clean($clientInfo->path . '/templates/' . $altTmpl . '/html/' . $option . '/' . $view . '/' . $altLayout . '.xml');
 
@@ -1380,9 +1380,9 @@ class ItemModel extends AdminModel
             $origTable->load($this->getState('item.id'));
 
             if ($table->title === $origTable->title) {
-                list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->alias, $table->title);
-                $table->title        = $title;
-                $table->alias        = $alias;
+                [$title, $alias] = $this->generateNewTitle($table->parent_id, $table->alias, $table->title);
+                $table->title    = $title;
+                $table->alias    = $alias;
             }
 
             if ($table->alias === $origTable->alias) {

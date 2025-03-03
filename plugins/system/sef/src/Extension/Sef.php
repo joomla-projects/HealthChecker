@@ -10,6 +10,10 @@
 
 namespace Joomla\Plugin\System\Sef\Extension;
 
+use Joomla\CMS\Event\Application\AfterDispatchEvent;
+use Joomla\CMS\Event\Application\AfterInitialiseEvent;
+use Joomla\CMS\Event\Application\AfterRenderEvent;
+use Joomla\CMS\Event\Application\AfterRouteEvent;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Router\Router;
@@ -56,14 +60,16 @@ final class Sef extends CMSPlugin implements SubscriberInterface
     /**
      * After initialise.
      *
+     * @param   AfterInitialiseEvent $event  The event instance.
+     *
      * @return  void
      *
      * @since   5.1.0
      */
-    public function onAfterInitialise()
+    public function onAfterInitialise(AfterInitialiseEvent $event)
     {
         $router = $this->getSiteRouter();
-        $app    = $this->getApplication();
+        $app    = $event->getApplication();
 
         if (
             $app->get('sef')
@@ -83,13 +89,15 @@ final class Sef extends CMSPlugin implements SubscriberInterface
     /**
      * OnAfterRoute listener
      *
+     * @param   AfterRouteEvent $event  The event instance.
+     *
      * @return void
      *
      * @since   5.1.0
      */
-    public function onAfterRoute()
+    public function onAfterRoute(AfterRouteEvent $event)
     {
-        $app = $this->getApplication();
+        $app = $event->getApplication();
 
         // Following code only for Site application, GET requests and HTML documents
         if (
@@ -148,15 +156,18 @@ final class Sef extends CMSPlugin implements SubscriberInterface
     /**
      * Add the canonical uri to the head.
      *
+     * @param   AfterDispatchEvent $event  The event instance.
+     *
      * @return  void
      *
      * @since   3.5
      */
-    public function onAfterDispatch()
+    public function onAfterDispatch(AfterDispatchEvent $event)
     {
-        $doc = $this->getApplication()->getDocument();
+        $app = $event->getApplication();
+        $doc = $app->getDocument();
 
-        if (!$this->getApplication()->isClient('site') || $doc->getType() !== 'html') {
+        if (!$app->isClient('site') || $doc->getType() !== 'html') {
             return;
         }
 
@@ -196,20 +207,23 @@ final class Sef extends CMSPlugin implements SubscriberInterface
     /**
      * Convert the site URL to fit to the HTTP request.
      *
+     * @param   AfterRenderEvent $event  The event instance.
+     *
      * @return  void
      */
-    public function onAfterRender()
+    public function onAfterRender(AfterRenderEvent $event)
     {
-        if (!$this->getApplication()->isClient('site')) {
+        $app = $event->getApplication();
+        if (!$app->isClient('site')) {
             return;
         }
 
         // Replace src links.
         $base   = Uri::base(true) . '/';
-        $buffer = $this->getApplication()->getBody();
+        $buffer = $app->getBody();
 
         // For feeds we need to search for the URL with domain.
-        $prefix = $this->getApplication()->getDocument()->getType() === 'feed' ? Uri::root() : '';
+        $prefix = $app->getDocument()->getType() === 'feed' ? Uri::root() : '';
 
         // Replace index.php URI by SEF URI.
         if (strpos($buffer, 'href="' . $prefix . 'index.php?') !== false) {
@@ -305,7 +319,7 @@ final class Sef extends CMSPlugin implements SubscriberInterface
         }
 
         // Use the replaced HTML body.
-        $this->getApplication()->setBody($buffer);
+        $app->setBody($buffer);
     }
 
     /**

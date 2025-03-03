@@ -11,7 +11,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       setupPlugins(on, config);
     },
-    baseUrl: 'http://localhost/',
+    baseUrl: 'https://localhost/',
     specPattern: [
       'tests/System/integration/install/**/*.cy.{js,jsx,ts,tsx}',
       'tests/System/integration/administrator/**/*.cy.{js,jsx,ts,tsx}',

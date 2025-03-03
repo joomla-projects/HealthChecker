@@ -246,7 +246,7 @@ abstract class AdminModel extends FormModel
             $this->event_before_batch = 'onBeforeBatch';
         }
 
-        $config['events_map'] = $config['events_map'] ?? [];
+        $config['events_map'] ??= [];
 
         $this->events_map = array_merge(
             [

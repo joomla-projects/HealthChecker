@@ -326,3 +326,10 @@ If you encounter the following error while running the System Tests on slow mach
       ...
     }
 ```
+
+## Docker
+The system tests can also be executed in headless mode with docker compose. The following command does a cleanup and then starts the system tests from the current docker-compose.yml file:
+
+`docker compose down && docker compose up system-tests`
+
+The database is used with a temporary filesystem, so the data always gets deleted when the tests are started, therefor the installation test must be performed as the first step. The webserver is accessible on the host from http://localhost:8080 or https://localhost:8443 and PHPMyAdmin on http://localhost:8081.

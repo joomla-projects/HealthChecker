@@ -692,7 +692,7 @@ class TaskModel extends AdminModel
         ];
 
         $ruleType        = $executionRules['rule-type'];
-        $ruleClass       = strpos($ruleType, 'interval') === 0 ? 'interval' : $ruleType;
+        $ruleClass       = str_starts_with($ruleType, 'interval') ? 'interval' : $ruleType;
         $buildExpression = '';
 
         if ($ruleClass === 'interval') {

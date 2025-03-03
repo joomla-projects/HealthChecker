@@ -154,7 +154,7 @@ class AssociationsModel extends ListModel
     {
         $type         = null;
 
-        list($extensionName, $typeName) = explode('.', $this->state->get('itemtype'), 2);
+        [$extensionName, $typeName] = explode('.', $this->state->get('itemtype'), 2);
 
         $extension = AssociationsHelper::getSupportedExtension($extensionName);
         $types     = $extension->get('types');

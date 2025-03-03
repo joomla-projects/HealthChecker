@@ -140,14 +140,14 @@ class FieldModel extends AdminModel
         $input = Factory::getApplication()->getInput();
 
         if ($input->get('task') == 'save2copy') {
-            $origTable = clone $this->getTable();
+            $origTable = $this->getTable();
             $origTable->load($input->getInt('id'));
 
             if ($data['title'] == $origTable->title) {
-                list($title, $name) = $this->generateNewTitle($data['group_id'], $data['name'], $data['title']);
-                $data['title']      = $title;
-                $data['label']      = $title;
-                $data['name']       = $name;
+                [$title, $name] = $this->generateNewTitle($data['group_id'], $data['name'], $data['title']);
+                $data['title']  = $title;
+                $data['label']  = $title;
+                $data['name']   = $name;
             } else {
                 if ($data['name'] == $origTable->name) {
                     $data['name'] = '';

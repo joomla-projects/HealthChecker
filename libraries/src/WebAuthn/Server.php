@@ -237,8 +237,8 @@ final class Server
             );
         }
 
-        $criteria   = $criteria ?? new AuthenticatorSelectionCriteria();
-        $extensions = $extensions ?? new AuthenticationExtensionsClientInputs();
+        $criteria ??= new AuthenticatorSelectionCriteria();
+        $extensions ??= new AuthenticationExtensionsClientInputs();
         $challenge  = random_bytes($this->challengeSize);
 
         return (new PublicKeyCredentialCreationOptions(
@@ -362,7 +362,7 @@ final class Server
             $data = [];
         }
 
-        $data['response'] = $data['response'] ?? [];
+        $data['response'] ??= [];
 
         foreach (['authenticatorData', 'clientDataJSON', 'signature', 'userHandle'] as $key) {
             try {

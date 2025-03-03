@@ -177,7 +177,10 @@ class WebAssetItem implements WebAssetItemInterface
                     break;
                 default:
                     // Asset for the ES modules may give us a folder for ESM import map
-                    if (str_ends_with($path, '/') && !str_starts_with($path, '.')) {
+                    if (
+                        $this->getOption('importmap') && !$this->isPathExternal($path) &&
+                        str_ends_with($path, '/') && !str_starts_with($path, '.')
+                    ) {
                         $path = Uri::root(true) . '/' . $path;
                     }
                     break;
@@ -301,15 +304,17 @@ class WebAssetItem implements WebAssetItemInterface
 
         $file     = $path;
         $external = $this->isPathExternal($path);
+        $folders  = ['script' => 'js', 'stylesheet' => 'css'];
 
         if (!$external) {
             // Get the file path
             $file = HTMLHelper::_(
-                $type,
+                'mediaPath',
+                $folders[$type],
                 $path,
                 [
-                    'pathOnly' => true,
-                    'relative' => !$this->isPathAbsolute($path),
+                    'detectDebug' => $this->getOption('debug') ? 1 : true,
+                    'relative'    => !$this->isPathAbsolute($path),
                 ]
             );
         }

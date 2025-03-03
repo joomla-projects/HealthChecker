@@ -10,7 +10,7 @@ describe('Test in backend that the user form', () => {
     cy.get('#jform_menudescription').clear().type('test description');
     cy.clickToolbarButton('Save & Close');
 
-    cy.get('#system-message-container').contains('Menu saved').should('exist');
+    cy.checkForSystemMessage('Menu saved');
     cy.contains('test menu');
   });
 });

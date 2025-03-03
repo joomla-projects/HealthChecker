@@ -404,7 +404,7 @@ class UpdateModel extends BaseDatabaseModel
         // Remove protocol, path and query string from URL
         $basename = basename($packageURL);
 
-        if (strpos($basename, '?') !== false) {
+        if (str_contains($basename, '?')) {
             $basename = substr($basename, 0, strpos($basename, '?'));
         }
 

@@ -991,8 +991,8 @@ class WebAssetManager implements WebAssetManagerInterface
         ?WebAssetItem $recursionRoot = null
     ): array {
         $assets        = [];
-        $recursionRoot = $recursionRoot ?? $asset;
-        $recursionType = $recursionType ?? $type;
+        $recursionRoot ??= $asset;
+        $recursionType ??= $type;
 
         foreach ($asset->getDependencies() as $depName) {
             $depType = $type;

@@ -42,7 +42,7 @@ class FeatureEvent extends AbstractImmutableEvent
             throw new \BadMethodCallException("Argument 'extension' of event $this->name is not of type 'string'");
         }
 
-        if (strpos($arguments['extension'], '.') === false) {
+        if (!str_contains($arguments['extension'], '.')) {
             throw new \BadMethodCallException("Argument 'extension' of event $this->name has wrong format. Valid format: 'component.section'");
         }
 

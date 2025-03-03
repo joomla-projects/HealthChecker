@@ -531,6 +531,25 @@
 	</menuitem>
 
 	<menuitem
+		title="MOD_MENU_HEALTH_CHECKER"
+		type="heading"
+		icon="heart"
+		class="class:heart"
+		>
+		<menuitem
+			type="component"
+			title="MOD_MENU_HEALTH_CHECKER_JOOMLA"
+			element="com_admin"
+			link="index.php?option=com_cpanel&amp;view=cpanel&amp;dashboard=health_checker"
+		/>
+
+		<menuitem
+			type="separator"
+		/>
+
+	</menuitem>
+
+	<menuitem
 		title="MOD_MENU_HELP"
 		type="heading"
 		icon="info-circle"

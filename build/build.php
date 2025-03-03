@@ -149,19 +149,10 @@ function clean_checkout(string $dir)
     system('rm -rf libraries/vendor/joomla/*/Tests');
     system('rm -rf libraries/vendor/joomla/*/ruleset.xml');
 
-    // maximebf/debugbar
-    system('rm -f libraries/vendor/maximebf/debugbar/chromedriver');
-
     // testing sampledata
     system('rm -rf plugins/sampledata/testing');
     system('rm -rf images/sampledata/parks');
     system('rm -rf images/sampledata/fruitshop');
-
-    // maximebf/debugbar
-    system('rm -rf libraries/vendor/maximebf/debugbar/build');
-    system('rm -rf libraries/vendor/maximebf/debugbar/demo');
-    system('rm -rf libraries/vendor/maximebf/debugbar/docs');
-    system('rm -rf libraries/vendor/maximebf/debugbar/tests');
 
     // paragonie/sodium_compat
     system('rm -rf libraries/vendor/paragonie/sodium_compat/build-phar.sh');

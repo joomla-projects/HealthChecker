@@ -113,7 +113,7 @@ class SearchModel extends ListModel
         $results = [];
 
         // Convert the rows to result objects.
-        foreach ($items as $rk => $row) {
+        foreach ($items as $row) {
             // Build the result object.
             if (\is_resource($row->object)) {
                 $result = unserialize(stream_get_contents($row->object));

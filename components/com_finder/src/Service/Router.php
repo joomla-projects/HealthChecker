@@ -52,7 +52,7 @@ class Router extends RouterView
      *
      * @return  array  Array of URL segments
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   5.2.4
      */
     public function build(&$query)
     {

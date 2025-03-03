@@ -72,7 +72,7 @@ class MenusHelper extends ContentHelper
         if (\is_string($request)) {
             $args = [];
 
-            if (strpos($request, 'index.php') === 0) {
+            if (str_starts_with($request, 'index.php')) {
                 parse_str(parse_url(htmlspecialchars_decode($request), PHP_URL_QUERY), $args);
             } else {
                 parse_str($request, $args);
@@ -480,7 +480,7 @@ class MenusHelper extends ContentHelper
                 ];
                 $table->load($keys);
             } elseif ($item->type == 'url' || $item->type == 'component') {
-                if (substr($item->link, 0, 8) === 'special:') {
+                if (str_starts_with($item->link, 'special:')) {
                     $special = substr($item->link, 8);
 
                     if ($special === 'language-forum') {

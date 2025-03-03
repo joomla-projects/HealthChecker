@@ -52,6 +52,8 @@ class ComponentRecord
      *
      * @var    string
      * @since  4.0.0
+     *
+     * @deprecated  __DEPLOY_VERSION__ will be removed in 7.0 as it was never used
      */
     public $namespace;
 

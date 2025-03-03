@@ -117,9 +117,9 @@ class Categories implements CategoryInterface, DatabaseAwareInterface
         $this->_key        = isset($options['key']) && $options['key'] ? $options['key'] : 'id';
         $this->_statefield = $options['statefield'] ?? 'state';
 
-        $options['access']      = $options['access'] ?? 'true';
-        $options['published']   = $options['published'] ?? 1;
-        $options['countItems']  = $options['countItems'] ?? 0;
+        $options['access'] ??= 'true';
+        $options['published'] ??= 1;
+        $options['countItems'] ??= 0;
         $options['currentlang'] = Multilanguage::isEnabled() ? Factory::getLanguage()->getTag() : 0;
 
         $this->_options = $options;

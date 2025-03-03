@@ -336,7 +336,7 @@ class Scheduler
      *
      * @return boolean  True if the user is authorized to run the task.
      *
-     * @since __DEPLOY_VERSION__
+     * @since 5.2.4
      */
     public static function isAuthorizedToRun(object $taskRecord, User $user): bool
     {
