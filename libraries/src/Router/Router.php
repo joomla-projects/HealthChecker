@@ -460,7 +460,7 @@ class Router
      */
     protected function createUri($url)
     {
-        if (!\is_array($url) && substr($url, 0, 1) !== '&') {
+        if (!\is_array($url) && !str_starts_with($url, '&')) {
             return new Uri($url);
         }
 
@@ -469,7 +469,7 @@ class Router
         if (\is_string($url)) {
             $vars = [];
 
-            if (strpos($url, '&amp;') !== false) {
+            if (str_contains($url, '&amp;')) {
                 $url = str_replace('&amp;', '&', $url);
             }
 

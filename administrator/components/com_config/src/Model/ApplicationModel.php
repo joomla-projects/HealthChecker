@@ -488,7 +488,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
                 } else {
                     $revisedDbo->truncateTable('#__session');
                 }
-            } catch (\RuntimeException $e) {
+            } catch (\RuntimeException) {
                 /*
                  * The database API logs errors on failures so we don't need to add any error handling mechanisms here.
                  * Also, this data won't be added or checked anymore once the configuration is saved, so it'll purge itself
@@ -519,7 +519,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
                             Log::WARNING,
                             'jerror'
                         );
-                    } catch (\RuntimeException $logException) {
+                    } catch (\RuntimeException) {
                         $app->enqueueMessage(
                             Text::sprintf(
                                 'COM_CONFIG_ERROR_CUSTOM_SESSION_FILESYSTEM_PATH_NOTWRITABLE_USING_DEFAULT',
@@ -596,7 +596,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
                         Log::WARNING,
                         'jerror'
                     );
-                } catch (\RuntimeException $logException) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(
                         Text::sprintf('COM_CONFIG_ERROR_CUSTOM_CACHE_PATH_NOTWRITABLE_USING_DEFAULT', $path, JPATH_CACHE),
                         'warning'
@@ -612,7 +612,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
             if ($error) {
                 try {
                     Log::add(Text::sprintf('COM_CONFIG_ERROR_CACHE_PATH_NOTWRITABLE', $path), Log::WARNING, 'jerror');
-                } catch (\RuntimeException $exception) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(Text::sprintf('COM_CONFIG_ERROR_CACHE_PATH_NOTWRITABLE', $path), 'warning');
                 }
 
@@ -629,16 +629,16 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
         if ((!$data['caching'] && $prev['caching']) || $data['cache_handler'] !== $prev['cache_handler']) {
             try {
                 Factory::getCache()->clean();
-            } catch (CacheConnectingException $exception) {
+            } catch (CacheConnectingException) {
                 try {
                     Log::add(Text::_('COM_CONFIG_ERROR_CACHE_CONNECTION_FAILED'), Log::WARNING, 'jerror');
-                } catch (\RuntimeException $logException) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(Text::_('COM_CONFIG_ERROR_CACHE_CONNECTION_FAILED'), 'warning');
                 }
-            } catch (UnsupportedCacheException $exception) {
+            } catch (UnsupportedCacheException) {
                 try {
                     Log::add(Text::_('COM_CONFIG_ERROR_CACHE_DRIVER_UNSUPPORTED'), Log::WARNING, 'jerror');
-                } catch (\RuntimeException $logException) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(Text::_('COM_CONFIG_ERROR_CACHE_DRIVER_UNSUPPORTED'), 'warning');
                 }
             }
@@ -672,7 +672,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
                         Log::WARNING,
                         'jerror'
                     );
-                } catch (\RuntimeException $logException) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(
                         Text::sprintf('COM_CONFIG_ERROR_CUSTOM_TEMP_PATH_NOTWRITABLE_USING_DEFAULT', $path, $defaultTmpPath),
                         'warning'
@@ -687,7 +687,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
             if ($error) {
                 try {
                     Log::add(Text::sprintf('COM_CONFIG_ERROR_TMP_PATH_NOTWRITABLE', $path), Log::WARNING, 'jerror');
-                } catch (\RuntimeException $exception) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(Text::sprintf('COM_CONFIG_ERROR_TMP_PATH_NOTWRITABLE', $path), 'warning');
                 }
             }
@@ -721,7 +721,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
                         Log::WARNING,
                         'jerror'
                     );
-                } catch (\RuntimeException $logException) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(
                         Text::sprintf('COM_CONFIG_ERROR_CUSTOM_LOG_PATH_NOTWRITABLE_USING_DEFAULT', $path, $defaultLogPath),
                         'warning'
@@ -735,7 +735,7 @@ class ApplicationModel extends FormModel implements MailerFactoryAwareInterface
             if ($error) {
                 try {
                     Log::add(Text::sprintf('COM_CONFIG_ERROR_LOG_PATH_NOTWRITABLE', $path), Log::WARNING, 'jerror');
-                } catch (\RuntimeException $exception) {
+                } catch (\RuntimeException) {
                     $app->enqueueMessage(Text::sprintf('COM_CONFIG_ERROR_LOG_PATH_NOTWRITABLE', $path), 'warning');
                 }
             }

@@ -487,8 +487,7 @@ class Update
                         $this->$key = $val;
                     }
 
-                    unset($this->latest);
-                    unset($this->currentUpdate);
+                    unset($this->latest, $this->currentUpdate);
                 } elseif (isset($this->currentUpdate)) {
                     // The update might be for an older version of j!
                     unset($this->currentUpdate);
@@ -643,7 +642,7 @@ class Update
         try {
             $http     = HttpFactory::getHttp($httpOption);
             $response = $http->get($url);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             $response = null;
         }
 

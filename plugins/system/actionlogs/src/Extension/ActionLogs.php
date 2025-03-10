@@ -46,7 +46,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
      *
      * @return array
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   5.3.0
      */
     public static function getSubscribedEvents(): array
     {
@@ -67,7 +67,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
      *
      * @return  void
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   5.3.0
      */
     public function onAfterInitialise(AfterInitialiseEvent $event): void
     {
@@ -182,7 +182,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
 
         try {
             $values = $db->setQuery($query)->loadObject();
-        } catch (ExecutionFailureException $e) {
+        } catch (ExecutionFailureException) {
             return;
         }
 
@@ -292,7 +292,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
 
         try {
             $db->setQuery($query)->execute();
-        } catch (ExecutionFailureException $e) {
+        } catch (ExecutionFailureException) {
             // Do nothing.
         }
     }
@@ -325,7 +325,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
 
         try {
             $db->setQuery($query)->execute();
-        } catch (ExecutionFailureException $e) {
+        } catch (ExecutionFailureException) {
             // Do nothing.
         }
     }
@@ -399,7 +399,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
 
         try {
             $values = $db->setQuery($query)->loadObjectList();
-        } catch (ExecutionFailureException $e) {
+        } catch (ExecutionFailureException) {
             return;
         }
 
@@ -420,7 +420,7 @@ final class ActionLogs extends CMSPlugin implements SubscriberInterface
 
             try {
                 $db->setQuery($query)->execute();
-            } catch (ExecutionFailureException $e) {
+            } catch (ExecutionFailureException) {
                 // Do nothing.
             }
         }

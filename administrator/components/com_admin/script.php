@@ -3310,7 +3310,7 @@ class JoomlaInstallerScript
         try {
             // Using hard-coded string because a new language string would not be available in all cases
             Log::add('Fixing permissions for files and folders.', Log::INFO, 'Update');
-        } catch (\RuntimeException $exception) {
+        } catch (\RuntimeException) {
             // Informational log only
         }
 

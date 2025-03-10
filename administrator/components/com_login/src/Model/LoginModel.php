@@ -179,7 +179,7 @@ class LoginModel extends BaseDatabaseModel
 
         try {
             return $clean = $cache->get($loader, [], md5(serialize([$clientId, $lang])));
-        } catch (CacheExceptionInterface $cacheException) {
+        } catch (CacheExceptionInterface) {
             try {
                 return $loader();
             } catch (ExecutionFailureException $databaseException) {

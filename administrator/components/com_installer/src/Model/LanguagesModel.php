@@ -136,7 +136,7 @@ class LanguagesModel extends ListModel
 
         try {
             $response = HttpFactory::getHttp()->get($updateSite);
-        } catch (\RuntimeException $e) {
+        } catch (\RuntimeException) {
             $response = null;
         }
 

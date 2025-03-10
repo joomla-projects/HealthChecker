@@ -286,7 +286,7 @@ class UpdateModel extends ListModel
 
         try {
             $db->truncateTable('#__updates');
-        } catch (ExecutionFailureException $e) {
+        } catch (ExecutionFailureException) {
             $this->_message = Text::_('JLIB_INSTALLER_FAILED_TO_PURGE_UPDATES');
 
             return false;

@@ -11,6 +11,7 @@
 namespace Joomla\Plugin\Content\EmailCloak\Extension;
 
 use Joomla\CMS\Event\Content\ContentPrepareEvent;
+use Joomla\CMS\Event\CustomFields\AfterPrepareFieldEvent;
 use Joomla\CMS\Event\Finder\ResultEvent;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -38,8 +39,9 @@ final class EmailCloak extends CMSPlugin implements SubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'onContentPrepare' => 'onContentPrepare',
-            'onFinderResult'   => 'onFinderResult',
+            'onContentPrepare'                => 'onContentPrepare',
+            'onFinderResult'                  => 'onFinderResult',
+            'onCustomFieldsAfterPrepareField' => 'onCustomFieldsAfterPrepareField',
         ];
     }
 
@@ -93,6 +95,27 @@ final class EmailCloak extends CMSPlugin implements SubscriberInterface
 
         if ($text) {
             $item->text = $text;
+        }
+    }
+
+    /**
+     * Plugin that cloaks all emails in a custom field.
+     *
+     * @param   AfterPrepareFieldEvent  $event  Event instance
+     *
+     * @return  void
+     */
+    public function onCustomFieldsAfterPrepareField(AfterPrepareFieldEvent $event)
+    {
+        // If the value is empty then there is nothing to do
+        if (empty($event->getValue())) {
+            return;
+        }
+
+        $text = $this->cloak($event->getValue());
+
+        if ($text) {
+            $event->updateValue($text);
         }
     }
 

@@ -290,7 +290,7 @@ sudo npm run cypress:run
 
 If the `root` user does not have a Cypress installation, you can use the Cypress installation cache of the current user:
 ```
-CYPRESS_CACHE_FOLDER=$HOME/.cache/Cypress sudo npm run cypress:run
+sudo CYPRESS_CACHE_FOLDER=$HOME/.cache/Cypress npm run cypress:run
 ```
 
 

@@ -223,7 +223,7 @@ JS
     {
         $url ??= '';
 
-        if (strpos($url, 'http') !== 0) {
+        if (!str_starts_with($url, 'http')) {
             $url = Uri::base() . $url;
         }
 
