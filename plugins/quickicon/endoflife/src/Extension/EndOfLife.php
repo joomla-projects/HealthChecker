@@ -10,6 +10,7 @@
 
 namespace Joomla\Plugin\Quickicon\EndOfLife\Extension;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -68,44 +69,56 @@ final class EndOfLife extends CMSPlugin implements SubscriberInterface
      */
     protected function getSingleCycle($product, $version)
     {
-        $curl = curl_init();
+        $cache = Factory::getCache('plg_quickicon_endoflife', '');
+        $cache->setCaching(true);
+        $cache->setLifeTime(3600); // Cache in minutes
 
-        curl_setopt_array($curl, [
-            CURLOPT_URL => 'http://endoflife.date/api/' . $product . '/' . $version . '.json',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                'Accept: application/json'
-            ],
-        ]);
+        $cacheid = md5('plg_quickicon_endoflife_' . $product); // Must be unique by value
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        // Temporary disable SSL verification for local testing
-
-        $context = stream_context_create([
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-            ],
-        ]);
-
-        return $response = file_get_contents('https://endoflife.date/api/' . $product . '/' . $version . '.json', false, $context);
-
-        // End temporary disable SSL verification
-
-        if (!$error) {
-            return $response;
+        if ($cache->contains($cacheid)) {
+            return $cache->get($cacheid);
         }
 
-        return false;
+        if ($this->isLocalhost()) {
+            // Temporary disable SSL verification for local testing
+
+            $context = stream_context_create([
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+            ]);
+
+            $response = file_get_contents('https://endoflife.date/api/' . $product . '/' . $version . '.json', false, $context);
+        } else {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL => 'http://endoflife.date/api/' . $product . '/' . $version . '.json',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'GET',
+                CURLOPT_HTTPHEADER => [
+                    'Accept: application/json'
+                ],
+            ]);
+
+            $response = curl_exec($curl);
+            $error = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($error) {
+                return false;
+            }
+        }        
+
+        $cache->store($response, $cacheid);
+
+        return $response;
     }
 
     /**
@@ -271,5 +284,19 @@ final class EndOfLife extends CMSPlugin implements SubscriberInterface
         }
 
         $event->setArgument('result', $result);
+    }
+
+    /**
+     * Determine if the site is installed in a local environmnent
+     * 
+     * @return bool
+     */
+    protected function isLocalhost(): bool
+    {
+        $serverName = $_SERVER['SERVER_NAME'] ?? '';
+        $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
+
+        return in_array($serverName, ['localhost', '127.0.0.1'], true)
+        || in_array($remoteAddr, ['127.0.0.1', '::1'], true);
     }
 }
