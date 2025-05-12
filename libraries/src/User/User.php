@@ -755,7 +755,7 @@ class User
             }
 
             // We are only worried about edits to this account if I am not a Super Admin.
-            if ($iAmSuperAdmin != true && $iAmRehashingSuperadmin != true && $isCli != true) {
+            if (!$iAmSuperAdmin && !$iAmRehashingSuperadmin && !$isCli) {
                 // I am not a Super Admin, and this one is, so fail.
                 if (!$isNew && Access::check($this->id, 'core.admin')) {
                     throw new \RuntimeException('User not Super Administrator');
@@ -769,6 +769,11 @@ class User
                         }
                     }
                 }
+            }
+
+            // Unset the activation token, if the mail address changes - that affects both, activation and PW resets
+            if ($this->email !== $oldUser->email && $this->id !== 0 && !empty($this->activation) && !$this->block) {
+                $table->activation = '';
             }
 
             // Fire the onUserBeforeSave event.
