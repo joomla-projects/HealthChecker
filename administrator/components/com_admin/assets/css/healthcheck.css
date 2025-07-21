@@ -7,13 +7,13 @@
  */
 
 /**
- * Health Checker CSS - Merges CD's design with Atum admin template
+ * Health Checker CSS - Merges Demo UI's design with Atum admin template
  * Uses existing Atum variables and extends with custom health checker styles
  *
  * @since  5.4
  */
 
-/* Health Score Circle - CD's design adapted for Atum */
+/* Health Score Circle - Demo UI's design adapted for Atum */
 .healthchecker-score-circle {
     position: relative;
     width: 120px;
@@ -46,7 +46,7 @@
     transition: all 0.3s ease;
 }
 
-/* Expandable Sections - CD's functionality with Atum styling */
+/* Expandable Sections - Demo UI's functionality with Atum styling */
 .healthchecker-expandable {
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);

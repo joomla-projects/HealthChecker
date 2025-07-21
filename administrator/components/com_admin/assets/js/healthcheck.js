@@ -8,12 +8,12 @@
 
 /**
  * JavaScript for the Health Checker dashboard
- * Merges CD's original functionality with Joomla/Atum patterns
+ * Merges Demo UI's original functionality with Joomla/Atum patterns
  *
  * @since  5.4
  */
 
-// Extension details data (from CD's original work)
+// Extension details data (from Demo UI's original work)
 const extensionDetails = {
     1: {
         name: 'JCE Editor',
