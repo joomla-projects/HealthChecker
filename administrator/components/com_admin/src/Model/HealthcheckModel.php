@@ -36,7 +36,7 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     public function getHealthData(): array
     {
-        // Mock data for now - will be replaced with real health checks
+        // TODO: Replace mock data with real health checks implementation.
         return [
             'overall_score' => 85,
             'status_class' => 'success',
