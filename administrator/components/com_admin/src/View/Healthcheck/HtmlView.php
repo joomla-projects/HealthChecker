@@ -112,7 +112,7 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
         
         $toolbar->standardButton('refresh', 'COM_ADMIN_HEALTH_CHECKER_RUN_SCAN')
-            ->icon('fas fa-sync-alt')
+            ->icon('icon-refresh')
             ->onclick('Joomla.submitbutton(\'healthcheck.scan\');');
 
         $toolbar->linkButton('download', 'COM_ADMIN_HEALTH_CHECKER_EXPORT_REPORT')
