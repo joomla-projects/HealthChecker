@@ -116,7 +116,7 @@ class HtmlView extends BaseHtmlView
             ->onclick('Joomla.submitbutton(\'healthcheck.scan\');');
 
         $toolbar->linkButton('download', 'COM_ADMIN_HEALTH_CHECKER_EXPORT_REPORT')
-            ->icon('fas fa-download')
+            ->icon('icon-download')
             ->url(Route::_('index.php?option=com_admin&view=healthcheck&format=json&' . Session::getFormToken() . '=1'));
 
         $toolbar->help('Health_Checker');
