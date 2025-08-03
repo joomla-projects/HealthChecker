@@ -19,31 +19,10 @@ use Joomla\CMS\Layout\LayoutHelper;
 // Helper functions for display
 $model = $this->getModel();
 
-// Load accessibility CSS and JS
-HTMLHelper::_('stylesheet', 'administrator/components/com_admin/assets/css/healthcheck-a11y.css', ['version' => 'auto']);
-HTMLHelper::_('script', 'administrator/components/com_admin/assets/js/healthcheck-a11y.js', ['version' => 'auto']);
-
 ?>
 
-<!-- Skip Links -->
-<div class="healthchecker-skip-links">
-    <a href="#main-content" class="healthchecker-skip-link">
-        Skip to main content
-    </a>
-    <a href="#extension-table" class="healthchecker-skip-link">
-        Skip to extensions table
-    </a>
-    <a href="#action-buttons" class="healthchecker-skip-link">
-        Skip to action buttons
-    </a>
-</div>
-
-<!-- Live Regions for Dynamic Updates -->
-<div id="healthchecker-status-updates" class="healthchecker-live-region" aria-live="polite" aria-atomic="true"></div>
-<div id="healthchecker-error-announcements" class="healthchecker-live-region" aria-live="assertive" aria-atomic="true"></div>
-
 <!-- Health Checker Container using Atum/Bootstrap classes -->
-<div class="container-fluid" id="main-content">
+<div class="container-fluid">
     <!-- System Messages Container -->
     <div id="system-message-container" aria-live="polite"></div>
 
@@ -66,27 +45,14 @@ HTMLHelper::_('script', 'administrator/components/com_admin/assets/js/healthchec
         <div class="col-lg-4 col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title mb-0 h5">
-                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_OVERALL_HEALTH'); ?>
-                        <span class="sr-only">out of 100</span>
-                    </h3>
-                    <span class="badge bg-<?php echo $this->healthData['status_class']; ?> healthchecker-score-status"
-                          role="status" aria-live="polite">
+                    <h3 class="card-title mb-0 h5"><?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_OVERALL_HEALTH'); ?></h3>
+                    <span class="badge bg-<?php echo $this->healthData['status_class']; ?> healthchecker-score-status">
                         <?php echo $this->healthData['status_text']; ?>
                     </span>
                 </div>
                 <div class="card-body text-center">
-                    <div class="healthchecker-score-circle position-relative d-inline-flex align-items-center justify-content-center" 
-                         data-score="<?php echo $this->healthData['overall_score']; ?>"
-                         role="progressbar" 
-                         aria-valuenow="<?php echo $this->healthData['overall_score']; ?>" 
-                         aria-valuemin="0" 
-                         aria-valuemax="100"
-                         aria-label="Health score: <?php echo $this->healthData['overall_score']; ?> out of 100"
-                         tabindex="0">
-                        <div class="healthchecker-score-value display-4 fw-bold text-primary" aria-hidden="true">
-                            <?php echo $this->healthData['overall_score']; ?>
-                        </div>
+                    <div class="healthchecker-score-circle position-relative d-inline-flex align-items-center justify-content-center" data-score="<?php echo $this->healthData['overall_score']; ?>">
+                        <div class="healthchecker-score-value display-4 fw-bold text-primary"><?php echo $this->healthData['overall_score']; ?></div>
                     </div>
                     <p class="text-muted mt-2"><?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_HEALTH_SCORE'); ?></p>
                 </div>
@@ -209,43 +175,49 @@ HTMLHelper::_('script', 'administrator/components/com_admin/assets/js/healthchec
                     </span>
                 </div>
                 <div class="card-body">
-                    <?php foreach ($this->healthData['core_checks'] as $checkType => $checkData): ?>
-                        <div class="check-section mb-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0"><?php echo ucfirst(str_replace('_', ' ', $checkType)) . ' ' . Text::_('COM_ADMIN_HEALTH_CHECKER_CHECKS'); ?></h6>
-                                <span class="badge bg-<?php echo $checkData['status']; ?> d-flex align-items-center gap-1">
+                    <?php foreach ($this->healthData['core_checks'] as $checkType => $checks): ?>
+                        <?php if (is_array($checks) && !empty($checks)): ?>
+                            <div class="check-section mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0"><?php echo ucfirst(str_replace('_', ' ', $checkType)) . ' ' . Text::_('COM_ADMIN_HEALTH_CHECKER_CHECKS'); ?></h6>
                                     <?php 
+                                    // Determine overall status for this category
+                                    $hasErrors = false;
+                                    $hasWarnings = false;
+                                    foreach ($checks as $check) {
+                                        if ($check['status'] === 'error') $hasErrors = true;
+                                        if ($check['status'] === 'warning') $hasWarnings = true;
+                                    }
+                                    $overallStatus = $hasErrors ? 'danger' : ($hasWarnings ? 'warning' : 'success');
                                     $statusIcons = ['success' => 'check', 'warning' => 'warning', 'danger' => 'times'];
-                                    $icon = $statusIcons[$checkData['status']] ?? 'question';
+                                    $icon = $statusIcons[$overallStatus] ?? 'question';
                                     ?>
-                                    <span class="icon-<?php echo $icon; ?>" aria-hidden="true"></span>
-                                    <?php echo ($checkData['status'] === 'success' ? Text::_('COM_ADMIN_HEALTH_CHECKER_PASS') : Text::_('COM_ADMIN_HEALTH_CHECKER_REVIEW')); ?>
-                                </span>
-                            </div>
-                            
-                            <?php if (isset($checkData['details'])): ?>
-                                <?php foreach ($checkData['details'] as $detail => $value): ?>
+                                    <span class="badge bg-<?php echo $overallStatus; ?> d-flex align-items-center gap-1">
+                                        <span class="icon-<?php echo $icon; ?>" aria-hidden="true"></span>
+                                        <?php echo ($overallStatus === 'success' ? Text::_('COM_ADMIN_HEALTH_CHECKER_PASS') : Text::_('COM_ADMIN_HEALTH_CHECKER_REVIEW')); ?>
+                                    </span>
+                                </div>
+                                
+                                <?php foreach ($checks as $check): ?>
                                     <div class="check-detail d-flex justify-content-between align-items-center mb-1">
-                                        <span class="text-muted small"><?php echo ucfirst(str_replace('_', ' ', $detail)); ?></span>
-                                        <?php if (is_bool($value)): ?>
-                                            <span class="text-<?php echo $value ? 'success' : 'danger'; ?>">
-                                                <span class="icon-<?php echo $value ? 'check' : 'times'; ?>" aria-hidden="true"></span>
-                                            </span>
-                                        <?php elseif (is_numeric($value)): ?>
-                                            <span class="text-<?php echo $value >= 80 ? 'success' : 'warning'; ?>"><?php echo $value; ?>%</span>
-                                        <?php endif; ?>
+                                        <span class="text-muted small"><?php echo htmlspecialchars($check['title'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <span class="text-<?php echo $check['status'] === 'success' ? 'success' : 'warning'; ?>" 
+                                              role="status" 
+                                              aria-label="<?php echo $check['status'] === 'success' ? 'Check passed' : 'Check needs review'; ?>: <?php echo htmlspecialchars($check['message'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <?php 
+                                            $checkIcon = $check['status'] === 'success' ? 'check' : 'warning';
+                                            $checkStatus = $check['status'] === 'success' ? 'passed' : 'needs review';
+                                            ?>
+                                            <span class="icon-<?php echo $checkIcon; ?>" 
+                                                  aria-hidden="true" 
+                                                  title="<?php echo ucfirst($checkStatus); ?>"></span>
+                                            <span class="visually-hidden"><?php echo ucfirst($checkStatus); ?>: </span>
+                                            <?php echo htmlspecialchars($check['message'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </span>
                                     </div>
-                                    <?php if (is_numeric($value)): ?>
-                                        <div class="progress mb-2" style="height: 4px;">
-                                            <div class="progress-bar bg-<?php echo $value >= 80 ? 'success' : 'warning'; ?>" 
-                                                 style="width: <?php echo $value; ?>%" role="progressbar" 
-                                                 aria-valuenow="<?php echo $value; ?>" aria-valuemin="0" aria-valuemax="100">
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
                                 <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
+                            </div>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -273,33 +245,25 @@ HTMLHelper::_('script', 'administrator/components/com_admin/assets/js/healthchec
 
         <!-- Filter Tabs using Bootstrap nav-tabs -->
         <div class="card-body">
-            <ul class="nav nav-tabs mb-3" role="tablist" aria-label="Filter extensions by status">
+            <ul class="nav nav-tabs mb-3" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-filter="all" type="button" role="tab"
-                            id="tab-all" aria-controls="extension-table" aria-selected="true">
-                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_ALL_EXTENSIONS'); ?>
-                        <span class="badge bg-secondary ms-1"><?php echo count($this->extensionData); ?></span>
+                    <button class="nav-link active" data-filter="all" type="button" role="tab">
+                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_ALL_EXTENSIONS'); ?> (<?php echo count($this->extensionData); ?>)
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-filter="incompatible" type="button" role="tab"
-                            id="tab-incompatible" aria-controls="extension-table" aria-selected="false">
-                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_INCOMPATIBLE'); ?>
-                        <span class="badge bg-secondary ms-1"><?php echo $model->countByStatus($this->extensionData, 'incompatible'); ?></span>
+                    <button class="nav-link" data-filter="incompatible" type="button" role="tab">
+                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_INCOMPATIBLE'); ?> (<?php echo $model->countByStatus($this->extensionData, 'incompatible'); ?>)
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-filter="needs_update" type="button" role="tab"
-                            id="tab-needs-update" aria-controls="extension-table" aria-selected="false">
-                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_NEEDS_UPDATE'); ?>
-                        <span class="badge bg-secondary ms-1"><?php echo $model->countByStatus($this->extensionData, 'needs_update'); ?></span>
+                    <button class="nav-link" data-filter="needs_update" type="button" role="tab">
+                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_NEEDS_UPDATE'); ?> (<?php echo $model->countByStatus($this->extensionData, 'needs_update'); ?>)
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-filter="compatible" type="button" role="tab"
-                            id="tab-compatible" aria-controls="extension-table" aria-selected="false">
-                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_COMPATIBLE'); ?>
-                        <span class="badge bg-secondary ms-1"><?php echo $model->countByStatus($this->extensionData, 'compatible'); ?></span>
+                    <button class="nav-link" data-filter="compatible" type="button" role="tab">
+                        <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_COMPATIBLE'); ?> (<?php echo $model->countByStatus($this->extensionData, 'compatible'); ?>)
                     </button>
                 </li>
             </ul>
@@ -310,7 +274,7 @@ HTMLHelper::_('script', 'administrator/components/com_admin/assets/js/healthchec
     </div>
 
     <!-- Bottom Action Bar -->
-    <div class="card" id="action-buttons">
+    <div class="card">
         <div class="card-body text-center">
             <div class="btn-toolbar justify-content-center gap-2" role="toolbar">
                 <button type="button" class="btn btn-success btn-lg" onclick="healthChecker.startUpgradeProcess()">
