@@ -17,7 +17,6 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use Joomla\CMS\WebAsset\WebAssetManager;
 use Joomla\Component\Admin\Administrator\Model\HealthcheckModel;
-use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -68,18 +67,14 @@ class HtmlView extends BaseHtmlView
         $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_admin_healthchecker', JPATH_ADMINISTRATOR, null, false, true);
 
-        // Get data from model
+        // Get data from model - direct instantiation
         try {
-            /** @var HealthcheckModel $model */
-            $model = $this->getModel('Healthcheck', 'Administrator');
-            if (!$model) {
-                // Create model directly using MVC factory
-                $app = Factory::getApplication();
-                $component = $app->bootComponent('com_admin');
-                $mvcFactory = $component->getMVCFactory();
-                $model = $mvcFactory->createModel('Healthcheck', 'Administrator');
+            $model = new HealthcheckModel();
+            if ($model) {
+                $this->providers = $model->getHealthCheckProviders();
+            } else {
+                throw new \Exception('Failed to create HealthcheckModel');
             }
-            $this->providers = $model->getHealthCheckProviders();
         } catch (\Exception $e) {
             // Log error and provide empty providers array
             Factory::getApplication()->enqueueMessage(
@@ -111,11 +106,11 @@ class HtmlView extends BaseHtmlView
         
         $toolbar->standardButton('save', 'JSAVE')
             ->icon('fas fa-save')
-            ->onclick('Joomla.submitform(\'healthcheck_config.save\');');
+            ->onclick('Joomla.submitform(\'healthcheckconfig.save\');');
 
         $toolbar->standardButton('cancel', 'JCANCEL')
             ->icon('fas fa-times')
-            ->onclick('Joomla.submitform(\'healthcheck_config.cancel\');');
+            ->onclick('Joomla.submitform(\'healthcheckconfig.cancel\');');
 
         $toolbar->help('Health_Checker_Configuration');
     }

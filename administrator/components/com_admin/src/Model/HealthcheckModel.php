@@ -49,16 +49,22 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     protected function initializeProviders(): void
     {
-        if (empty($this->healthCheckProviders)) {
-            // Register built-in providers
-            $this->healthCheckProviders[] = new SeoHealthCheck();
-            $this->healthCheckProviders[] = new SystemHealthCheck();
-            
-            // Discover and register health check modules
-            $this->discoverHealthCheckModules();
-            
-            // TODO: Add plugin discovery system to find external plugins
+        // Only initialize once
+        static $initialized = false;
+        if ($initialized || !empty($this->healthCheckProviders)) {
+            return;
         }
+        
+        // Register built-in providers
+        $this->healthCheckProviders[] = new SeoHealthCheck();
+        $this->healthCheckProviders[] = new SystemHealthCheck();
+        
+        // Discover and register health check modules
+        $this->discoverHealthCheckModules();
+        
+        // TODO: Add plugin discovery system to find external plugins
+        
+        $initialized = true;
     }
 
     /**
@@ -90,12 +96,22 @@ class HealthcheckModel extends BaseDatabaseModel
             $db->setQuery($query);
             
             try {
-                if ((int) $db->loadResult() > 0) {
+                $count = (int) $db->loadResult();
+                if ($count > 0) {
                     // Module is available, create adapter
                     $adapter = new $adapterClass();
                     if ($adapter instanceof HealthCheckProviderInterface) {
                         $this->healthCheckProviders[] = $adapter;
+                        Factory::getApplication()->enqueueMessage(
+                            "Successfully loaded health check module: {$moduleName}",
+                            'info'
+                        );
                     }
+                } else {
+                    Factory::getApplication()->enqueueMessage(
+                        "Module {$moduleName} not found or not published (count: {$count})",
+                        'info'
+                    );
                 }
             } catch (Exception $e) {
                 // Log error but continue with other modules
@@ -194,7 +210,11 @@ class HealthcheckModel extends BaseDatabaseModel
                             'name' => $item['title'] ?? 'Unknown',
                             'type' => $item['metadata']['type'] ?? 'unknown',
                             'status' => $check['status'],
-                            'message' => $item['description'] ?? $check['message']
+                            'message' => $item['description'] ?? $check['message'],
+                            'current_version' => $item['metadata']['current_version'] ?? 'Unknown',
+                            'compatible_version' => $item['metadata']['compatible_version'] ?? 'Unknown',
+                            'author' => $item['metadata']['author'] ?? 'Unknown',
+                            'risk_level' => $item['metadata']['risk_level'] ?? ($check['status'] === 'error' ? 'high' : ($check['status'] === 'warning' ? 'medium' : 'low'))
                         ];
                     }
                 }
@@ -209,7 +229,11 @@ class HealthcheckModel extends BaseDatabaseModel
                     'name' => 'No Extension Health Check Plugins',
                     'type' => 'system',
                     'status' => 'info',
-                    'message' => 'Install extension health check plugins to see extension compatibility data'
+                    'message' => 'Install extension health check plugins to see extension compatibility data',
+                    'current_version' => 'N/A',
+                    'compatible_version' => 'N/A',
+                    'author' => 'System',
+                    'risk_level' => 'low'
                 ]
             ];
         }
@@ -238,12 +262,12 @@ class HealthcheckModel extends BaseDatabaseModel
             
             $checks = $provider->getChecks();
             foreach ($checks as $check) {
-                // Only include warning and error status as critical issues
-                if (in_array($check['status'], ['warning', 'error'])) {
+                // Only include ERROR status as critical issues, not warnings
+                if ($check['status'] === 'error') {
                     $criticalIssues[] = [
                         'title' => $check['title'],
                         'description' => $check['message'],
-                        'severity' => $check['status'] === 'error' ? 'error' : 'warning',
+                        'severity' => 'error',
                         'category' => $provider->getCategory()
                     ];
                 }
