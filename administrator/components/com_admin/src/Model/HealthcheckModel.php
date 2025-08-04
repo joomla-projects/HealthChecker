@@ -16,10 +16,6 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Version;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Helper\ModuleHelper;
-use Joomla\Component\Admin\Administrator\Interface\HealthCheckProviderInterface;
-use Joomla\Component\Admin\Administrator\HealthCheck\SeoHealthCheck;
-use Joomla\Component\Admin\Administrator\HealthCheck\SystemHealthCheck;
-use Joomla\Component\Admin\Administrator\HealthCheck\MetadescModuleAdapter;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -33,42 +29,16 @@ use Joomla\Component\Admin\Administrator\HealthCheck\MetadescModuleAdapter;
 class HealthcheckModel extends BaseDatabaseModel
 {
     /**
-     * Array of registered health check providers
+     * Storage for discovered module health checks
      *
-     * @var    HealthCheckProviderInterface[]
+     * @var    array
      * @since  5.4
      */
-    protected array $healthCheckProviders = [];
+    protected array $moduleHealthChecks = [];
+
 
     /**
-     * Initialize and discover health check providers
-     *
-     * @return  void
-     *
-     * @since   5.4
-     */
-    protected function initializeProviders(): void
-    {
-        // Only initialize once
-        static $initialized = false;
-        if ($initialized || !empty($this->healthCheckProviders)) {
-            return;
-        }
-        
-        // Register built-in providers
-        $this->healthCheckProviders[] = new SeoHealthCheck();
-        $this->healthCheckProviders[] = new SystemHealthCheck();
-        
-        // Discover and register health check modules
-        $this->discoverHealthCheckModules();
-        
-        // TODO: Add plugin discovery system to find external plugins
-        
-        $initialized = true;
-    }
-
-    /**
-     * Discover health check modules and create adapters
+     * Discover modules with health check manifests
      *
      * @return  void
      *
@@ -76,52 +46,271 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     protected function discoverHealthCheckModules(): void
     {
+        // Discover modules
+        $this->discoverModules();
+        
+        // Discover plugins
+        $this->discoverPlugins();
+    }
+
+    /**
+     * Discover modules with health check manifests
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function discoverModules(): void
+    {
         $db = Factory::getDbo();
         
-        // Known health check modules and their adapters
-        $healthCheckModules = [
-            'mod_metadesc_checker' => MetadescModuleAdapter::class,
-            // Add more module adapters here as they're created
-        ];
-        
-        foreach ($healthCheckModules as $moduleName => $adapterClass) {
-            // Check if module is installed and published
-            $query = $db->getQuery(true)
-                ->select('COUNT(*)')
-                ->from('#__modules')
-                ->where('module = ' . $db->quote($moduleName))
-                ->where('client_id = 1') // Administrator
-                ->where('published = 1');
-                
-            $db->setQuery($query);
+        // Get all published administrator modules
+        $query = $db->getQuery(true)
+            ->select(['module', 'params'])
+            ->from('#__modules')
+            ->where('client_id = 1') // Administrator
+            ->where('published = 1');
             
-            try {
-                $count = (int) $db->loadResult();
-                if ($count > 0) {
-                    // Module is available, create adapter
-                    $adapter = new $adapterClass();
-                    if ($adapter instanceof HealthCheckProviderInterface) {
-                        $this->healthCheckProviders[] = $adapter;
-                        Factory::getApplication()->enqueueMessage(
-                            "Successfully loaded health check module: {$moduleName}",
-                            'info'
-                        );
-                    }
-                } else {
-                    Factory::getApplication()->enqueueMessage(
-                        "Module {$moduleName} not found or not published (count: {$count})",
-                        'info'
-                    );
-                }
-            } catch (Exception $e) {
-                // Log error but continue with other modules
-                Factory::getApplication()->enqueueMessage(
-                    'Error loading health check module ' . $moduleName . ': ' . $e->getMessage(),
-                    'warning'
-                );
-            }
+        $db->setQuery($query);
+        
+        try {
+            $modules = $db->loadObjectList();
+        } catch (Exception $e) {
+            return;
+        }
+        
+        foreach ($modules as $module) {
+            $this->checkModuleManifest($module->module);
         }
     }
+
+    /**
+     * Discover plugins with health check manifests
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function discoverPlugins(): void
+    {
+        $db = Factory::getDbo();
+        
+        // Get all enabled plugins
+        $query = $db->getQuery(true)
+            ->select(['type', 'element', 'folder'])
+            ->from('#__extensions')
+            ->where('type = ' . $db->quote('plugin'))
+            ->where('enabled = 1');
+            
+        $db->setQuery($query);
+        
+        try {
+            $plugins = $db->loadObjectList();
+        } catch (Exception $e) {
+            return;
+        }
+        
+        foreach ($plugins as $plugin) {
+            $this->checkPluginManifest($plugin->folder, $plugin->element);
+        }
+    }
+
+    /**
+     * Check if module has health check manifest declaration
+     *
+     * @param   string  $moduleName  Module name
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function checkModuleManifest(string $moduleName): void
+    {
+        $manifestPath = JPATH_ADMINISTRATOR . '/modules/' . $moduleName . '/' . $moduleName . '.xml';
+        
+        if (!file_exists($manifestPath)) {
+            return;
+        }
+        
+        try {
+            $xml = simplexml_load_file($manifestPath);
+            
+            if ($xml === false || !isset($xml->healthcheck)) {
+                return;
+            }
+            
+            $healthcheck = $xml->healthcheck;
+            
+            // Check if enabled
+            if ((string) $healthcheck['enabled'] !== '1') {
+                return;
+            }
+            
+            // Extract provider details
+            $provider = $healthcheck->provider;
+            $className = (string) $provider['class'];
+            $methodName = (string) $provider['method'];
+            
+            if (empty($className) || empty($methodName)) {
+                return;
+            }
+            
+            // Call the module's health check method
+            $this->callModuleHealthCheck($moduleName, $className, $methodName);
+            
+        } catch (Exception $e) {
+            // Log error but continue with other modules
+            Factory::getApplication()->enqueueMessage(
+                'Error processing health check manifest for ' . $moduleName . ': ' . $e->getMessage(),
+                'warning'
+            );
+        }
+    }
+
+    /**
+     * Call module health check method dynamically
+     *
+     * @param   string  $moduleName  Module name
+     * @param   string  $className   Helper class name
+     * @param   string  $methodName  Method name
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function callModuleHealthCheck(string $moduleName, string $className, string $methodName): void
+    {
+        $helperFile = JPATH_ADMINISTRATOR . '/modules/' . $moduleName . '/helper.php';
+        
+        if (!file_exists($helperFile)) {
+            return;
+        }
+        
+        require_once $helperFile;
+        
+        if (!class_exists($className)) {
+            return;
+        }
+        
+        if (!method_exists($className, $methodName)) {
+            return;
+        }
+        
+        try {
+            // Call the method and store results
+            $healthData = call_user_func([$className, $methodName]);
+            
+            if (is_array($healthData)) {
+                $this->moduleHealthChecks[$moduleName] = $healthData;
+            }
+            
+        } catch (Exception $e) {
+            Factory::getApplication()->enqueueMessage(
+                'Error calling health check method for ' . $moduleName . ': ' . $e->getMessage(),
+                'warning'
+            );
+        }
+    }
+
+    /**
+     * Check if plugin has health check manifest declaration
+     *
+     * @param   string  $folder   Plugin folder
+     * @param   string  $element  Plugin element name
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function checkPluginManifest(string $folder, string $element): void
+    {
+        $manifestPath = JPATH_PLUGINS . '/' . $folder . '/' . $element . '/' . $element . '.xml';
+        
+        if (!file_exists($manifestPath)) {
+            return;
+        }
+        
+        try {
+            $xml = simplexml_load_file($manifestPath);
+            
+            if ($xml === false || !isset($xml->healthcheck)) {
+                return;
+            }
+            
+            $healthcheck = $xml->healthcheck;
+            
+            // Check if enabled
+            if ((string) $healthcheck['enabled'] !== '1') {
+                return;
+            }
+            
+            // Extract provider details
+            $provider = $healthcheck->provider;
+            $className = (string) $provider['class'];
+            $methodName = (string) $provider['method'];
+            
+            if (empty($className) || empty($methodName)) {
+                return;
+            }
+            
+            // Call the plugin's health check method
+            $this->callPluginHealthCheck($folder, $element, $className, $methodName);
+            
+        } catch (Exception $e) {
+            // Log error but continue with other plugins
+            Factory::getApplication()->enqueueMessage(
+                'Error processing health check manifest for plugin ' . $folder . '/' . $element . ': ' . $e->getMessage(),
+                'warning'
+            );
+        }
+    }
+
+    /**
+     * Call plugin health check method dynamically
+     *
+     * @param   string  $folder     Plugin folder
+     * @param   string  $element    Plugin element name
+     * @param   string  $className  Helper class name
+     * @param   string  $methodName Method name
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function callPluginHealthCheck(string $folder, string $element, string $className, string $methodName): void
+    {
+        $pluginFile = JPATH_PLUGINS . '/' . $folder . '/' . $element . '/' . $element . '.php';
+        
+        if (!file_exists($pluginFile)) {
+            return;
+        }
+        
+        require_once $pluginFile;
+        
+        if (!class_exists($className)) {
+            return;
+        }
+        
+        if (!method_exists($className, $methodName)) {
+            return;
+        }
+        
+        try {
+            // Call the method and store results
+            $healthData = call_user_func([$className, $methodName]);
+            
+            if (is_array($healthData)) {
+                $this->moduleHealthChecks[$folder . '_' . $element] = $healthData;
+            }
+            
+        } catch (Exception $e) {
+            Factory::getApplication()->enqueueMessage(
+                'Error calling health check method for plugin ' . $folder . '/' . $element . ': ' . $e->getMessage(),
+                'warning'
+            );
+        }
+    }
+
     /**
      * Get health check data
      *
@@ -131,27 +320,41 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     public function getHealthData(): array
     {
-        $this->initializeProviders();
+        // Discover modules with health check capabilities
+        $this->discoverHealthCheckModules();
         
-        // Get all checks from providers
+        // Get all checks from discovered modules only
         $allChecks = [];
         $totalChecks = 0;
         $passedChecks = 0;
         
-        foreach ($this->healthCheckProviders as $provider) {
-            if (!$provider->isEnabled()) {
-                continue;
-            }
-            
-            $checks = $provider->getChecks();
-            foreach ($checks as $check) {
+        // Add discovered module health checks
+        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
+            foreach ($moduleChecks as $check) {
                 $totalChecks++;
                 if ($check['status'] === 'success') {
                     $passedChecks++;
                 }
                 
-                $allChecks[$provider->getCategory()][] = $check;
+                // Use check category or default to 'modules'
+                $category = $check['category'] ?? 'modules';
+                $allChecks[$category][] = $check;
             }
+        }
+        
+        // If no modules discovered, show informational message
+        if (empty($this->moduleHealthChecks)) {
+            $allChecks['system'][] = [
+                'id' => 'no_modules',
+                'title' => 'No Health Check Modules',
+                'status' => 'info',
+                'count' => 0,
+                'message' => 'No plugins or modules with health check capabilities found. Install plugins/modules with <healthcheck> manifest elements to see health data.',
+                'details' => [],
+                'actions' => []
+            ];
+            $totalChecks = 1;
+            $passedChecks = 1; // Info status counts as passed
         }
         
         // Calculate overall score
@@ -191,24 +394,17 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     public function getExtensionData(): array
     {
-        $this->initializeProviders();
-        
         $extensionData = [];
         
-        // Get extension-related checks from providers
-        foreach ($this->healthCheckProviders as $provider) {
-            if (!$provider->isEnabled() || $provider->getCategory() !== 'extensions') {
-                continue;
-            }
-            
-            $checks = $provider->getChecks();
-            foreach ($checks as $check) {
+        // Get extension-related checks from discovered modules
+        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
+            foreach ($moduleChecks as $check) {
                 if (isset($check['details']['items'])) {
                     foreach ($check['details']['items'] as $item) {
                         $extensionData[] = [
                             'id' => $item['id'] ?? uniqid(),
                             'name' => $item['title'] ?? 'Unknown',
-                            'type' => $item['metadata']['type'] ?? 'unknown',
+                            'type' => $item['metadata']['type'] ?? 'module',
                             'status' => $check['status'],
                             'message' => $item['description'] ?? $check['message'],
                             'current_version' => $item['metadata']['current_version'] ?? 'Unknown',
@@ -250,25 +446,17 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     public function getCriticalIssues(): array
     {
-        $this->initializeProviders();
-        
         $criticalIssues = [];
         
-        // Get all issues from providers
-        foreach ($this->healthCheckProviders as $provider) {
-            if (!$provider->isEnabled()) {
-                continue;
-            }
-            
-            $checks = $provider->getChecks();
-            foreach ($checks as $check) {
-                // Only include ERROR status as critical issues, not warnings
+        // Get critical issues from discovered modules only
+        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
+            foreach ($moduleChecks as $check) {
                 if ($check['status'] === 'error') {
                     $criticalIssues[] = [
                         'title' => $check['title'],
                         'description' => $check['message'],
                         'severity' => 'error',
-                        'category' => $provider->getCategory()
+                        'category' => $check['category'] ?? 'modules'
                     ];
                 }
             }
@@ -287,28 +475,19 @@ class HealthcheckModel extends BaseDatabaseModel
      */
     public function getRecommendations(): array
     {
-        $this->initializeProviders();
-        
         $recommendations = [
             'critical' => [],
             'medium' => [],
             'ready' => []
         ];
         
-        // Generate recommendations based on check results
-        foreach ($this->healthCheckProviders as $provider) {
-            if (!$provider->isEnabled()) {
-                continue;
-            }
-            
-            $checks = $provider->getChecks();
-            foreach ($checks as $check) {
+        // Generate recommendations from discovered modules only
+        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
+            foreach ($moduleChecks as $check) {
                 if ($check['status'] === 'error') {
                     $recommendations['critical'][] = 'Fix: ' . $check['title'];
                 } elseif ($check['status'] === 'warning') {
                     $recommendations['medium'][] = 'Review: ' . $check['title'];
-                } elseif ($check['status'] === 'success' && $check['count'] === 0) {
-                    // Good checks don't need recommendations, but we could add optimization tips
                 }
             }
         }
@@ -383,33 +562,16 @@ class HealthcheckModel extends BaseDatabaseModel
     }
 
     /**
-     * Get all registered health check providers
+     * Get all discovered health check modules
      *
-     * @return  HealthCheckProviderInterface[]  Array of providers
+     * @return  array  Array of module health check data
      *
      * @since   5.4
      */
-    public function getHealthCheckProviders(): array
+    public function getHealthCheckModules(): array
     {
-        $this->initializeProviders();
-        return $this->healthCheckProviders;
+        $this->discoverHealthCheckModules();
+        return $this->moduleHealthChecks;
     }
 
-    /**
-     * Get health check providers by category
-     *
-     * @param   string  $category  Category to filter by
-     *
-     * @return  HealthCheckProviderInterface[]  Array of providers
-     *
-     * @since   5.4
-     */
-    public function getProvidersByCategory(string $category): array
-    {
-        $this->initializeProviders();
-        
-        return array_filter($this->healthCheckProviders, function($provider) use ($category) {
-            return $provider->getCategory() === $category && $provider->isEnabled();
-        });
-    }
 }
