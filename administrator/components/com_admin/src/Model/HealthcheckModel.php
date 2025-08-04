@@ -29,12 +29,12 @@ use Joomla\CMS\Helper\ModuleHelper;
 class HealthcheckModel extends BaseDatabaseModel
 {
     /**
-     * Storage for discovered module health checks
+     * Storage for discovered health check providers
      *
      * @var    array
      * @since  5.4
      */
-    protected array $moduleHealthChecks = [];
+    protected array $healthCheckProviders = [];
 
 
     /**
@@ -200,7 +200,7 @@ class HealthcheckModel extends BaseDatabaseModel
             $healthData = call_user_func([$className, $methodName]);
 
             if (is_array($healthData)) {
-                $this->moduleHealthChecks[$moduleName] = $healthData;
+                $this->healthCheckProviders[$moduleName] = $healthData;
             }
         } catch (Exception $e) {
             Factory::getApplication()->enqueueMessage(
@@ -297,7 +297,7 @@ class HealthcheckModel extends BaseDatabaseModel
             $healthData = call_user_func([$className, $methodName]);
 
             if (is_array($healthData)) {
-                $this->moduleHealthChecks[$folder . '_' . $element] = $healthData;
+                $this->healthCheckProviders[$folder . '_' . $element] = $healthData;
             }
         } catch (Exception $e) {
             Factory::getApplication()->enqueueMessage(
@@ -324,9 +324,9 @@ class HealthcheckModel extends BaseDatabaseModel
         $totalChecks = 0;
         $passedChecks = 0;
 
-        // Add discovered module health checks
-        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
-            foreach ($moduleChecks as $check) {
+        // Add discovered health checks from all providers
+        foreach ($this->healthCheckProviders as $providerName => $providerChecks) {
+            foreach ($providerChecks as $check) {
                 $totalChecks++;
                 if ($check['status'] === 'success') {
                     $passedChecks++;
@@ -338,8 +338,8 @@ class HealthcheckModel extends BaseDatabaseModel
             }
         }
 
-        // If no modules discovered, show informational message
-        if (empty($this->moduleHealthChecks)) {
+        // If no providers discovered, show informational message
+        if (empty($this->healthCheckProviders)) {
             $allChecks['system'][] = [
                 'id' => 'no_modules',
                 'title' => 'No Health Check Modules',
@@ -392,9 +392,9 @@ class HealthcheckModel extends BaseDatabaseModel
     {
         $extensionData = [];
 
-        // Get extension-related checks from discovered modules
-        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
-            foreach ($moduleChecks as $check) {
+        // Get extension-related checks from discovered providers
+        foreach ($this->healthCheckProviders as $providerName => $providerChecks) {
+            foreach ($providerChecks as $check) {
                 if (isset($check['details']['items'])) {
                     foreach ($check['details']['items'] as $item) {
                         $extensionData[] = [
@@ -444,9 +444,9 @@ class HealthcheckModel extends BaseDatabaseModel
     {
         $criticalIssues = [];
 
-        // Get critical issues from discovered modules only
-        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
-            foreach ($moduleChecks as $check) {
+        // Get critical issues from discovered providers only
+        foreach ($this->healthCheckProviders as $providerName => $providerChecks) {
+            foreach ($providerChecks as $check) {
                 if ($check['status'] === 'error') {
                     $criticalIssues[] = [
                         'title' => $check['title'],
@@ -477,9 +477,9 @@ class HealthcheckModel extends BaseDatabaseModel
             'ready' => []
         ];
 
-        // Generate recommendations from discovered modules only
-        foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
-            foreach ($moduleChecks as $check) {
+        // Generate recommendations from discovered providers only
+        foreach ($this->healthCheckProviders as $providerName => $providerChecks) {
+            foreach ($providerChecks as $check) {
                 if ($check['status'] === 'error') {
                     $recommendations['critical'][] = 'Fix: ' . $check['title'];
                 } elseif ($check['status'] === 'warning') {
@@ -558,15 +558,15 @@ class HealthcheckModel extends BaseDatabaseModel
     }
 
     /**
-     * Get all discovered health check modules
+     * Get all discovered health check providers
      *
-     * @return  array  Array of module health check data
+     * @return  array  Array of health check provider data
      *
      * @since   5.4
      */
-    public function getHealthCheckModules(): array
+    public function getHealthCheckProviders(): array
     {
         $this->discoverHealthCheckModules();
-        return $this->moduleHealthChecks;
+        return $this->healthCheckProviders;
     }
 }
