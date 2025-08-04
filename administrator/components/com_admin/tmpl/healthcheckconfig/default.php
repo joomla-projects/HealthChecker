@@ -140,7 +140,7 @@ $document->addStyleDeclaration('
         </div>
     </div>
 
-    <form action="<?php echo JRoute::_('index.php?option=com_admin&view=healthcheckconfig'); ?>" method="post" name="adminForm" id="healthcheck-config-form">
+    <form action="<?php echo JRoute::_('index.php?option=com_admin&view=healthcheckconfig'); ?>" method="post" name="adminForm" id="adminForm">
         
         <!-- Available Health Check Providers -->
         <div class="card mb-4">

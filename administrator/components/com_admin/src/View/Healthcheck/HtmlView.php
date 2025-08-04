@@ -119,6 +119,10 @@ class HtmlView extends BaseHtmlView
             ->icon('fas fa-download')
             ->url(Route::_('index.php?option=com_admin&view=healthcheck&format=json&' . Session::getFormToken() . '=1'));
 
+        $toolbar->linkButton('options', 'JTOOLBAR_OPTIONS')
+            ->icon('fas fa-cog')
+            ->url(Route::_('index.php?option=com_admin&view=healthcheckconfig'));
+
         $toolbar->help('Health_Checker');
     }
 

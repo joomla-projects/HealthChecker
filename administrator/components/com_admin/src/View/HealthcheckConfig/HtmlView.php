@@ -108,6 +108,10 @@ class HtmlView extends BaseHtmlView
             ->icon('fas fa-save')
             ->onclick('Joomla.submitform(\'healthcheckconfig.save\');');
 
+        $toolbar->standardButton('apply', 'JAPPLY')
+            ->icon('fas fa-check')
+            ->onclick('Joomla.submitform(\'healthcheckconfig.apply\');');
+
         $toolbar->standardButton('cancel', 'JCANCEL')
             ->icon('fas fa-times')
             ->onclick('Joomla.submitform(\'healthcheckconfig.cancel\');');
@@ -130,6 +134,7 @@ class HtmlView extends BaseHtmlView
         // Use Bootstrap components for toggles and forms
         $wa->useScript('bootstrap.tab')
            ->useScript('bootstrap.collapse')
+           ->useScript('core')
            ->useStyle('bootstrap.css');
     }
 

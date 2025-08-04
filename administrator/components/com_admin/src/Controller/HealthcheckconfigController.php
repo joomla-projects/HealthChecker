@@ -30,11 +30,47 @@ class HealthcheckconfigController extends FormController
     /**
      * Save the configuration
      *
+     * @param   string  $key     The name of the primary key of the URL variable.
+     * @param   string  $urlVar  The name of the URL variable if different from the primary key.
+     *
      * @return  void
      *
      * @since   5.4
      */
-    public function save()
+    public function save($key = null, $urlVar = null)
+    {
+        $this->saveConfiguration();
+        
+        // Save & Close - go back to main healthcheck view
+        $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheck', false));
+    }
+
+    /**
+     * Apply the configuration (save and stay)
+     *
+     * @param   string  $key     The name of the primary key of the URL variable.
+     * @param   string  $urlVar  The name of the URL variable if different from the primary key.
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    public function apply($key = null, $urlVar = null)
+    {
+        $this->saveConfiguration();
+        
+        // Stay on the configuration page
+        $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheck', false));
+    }
+
+    /**
+     * Save configuration data (shared method)
+     *
+     * @return  void
+     *
+     * @since   5.4
+     */
+    protected function saveConfiguration()
     {
         // Check for request forgeries
         $this->checkToken();
@@ -81,13 +117,10 @@ class HealthcheckconfigController extends FormController
             $db->setQuery($query);
             $db->execute();
 
-            $app->enqueueMessage(Text::_('COM_ADMIN_HEALTH_CHECKER_CONFIG_SAVED'), 'success');
+            $app->enqueueMessage(Text::_('JLIB_APPLICATION_SAVE_SUCCESS'), 'success');
         } catch (\Exception $e) {
-            $app->enqueueMessage(Text::_('COM_ADMIN_HEALTH_CHECKER_CONFIG_SAVE_ERROR') . ': ' . $e->getMessage(), 'error');
+            $app->enqueueMessage(Text::_('JERROR_SAVE_FAILED') . ': ' . $e->getMessage(), 'error');
         }
-
-        // Redirect back to configuration
-        $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheckconfig', false));
     }
 
     /**
@@ -224,11 +257,13 @@ class HealthcheckconfigController extends FormController
     /**
      * Cancel operation
      *
+     * @param   string  $key  The name of the primary key of the URL variable.
+     *
      * @return  void
      *
      * @since   5.4
      */
-    public function cancel()
+    public function cancel($key = null)
     {
         $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheck', false));
     }
