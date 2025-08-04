@@ -40,7 +40,7 @@ class HealthcheckconfigController extends FormController
     public function save($key = null, $urlVar = null)
     {
         $this->saveConfiguration();
-        
+
         // Save & Close - go back to main healthcheck view
         $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheck', false));
     }
@@ -58,7 +58,7 @@ class HealthcheckconfigController extends FormController
     public function apply($key = null, $urlVar = null)
     {
         $this->saveConfiguration();
-        
+
         // Stay on the configuration page
         $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheck', false));
     }
