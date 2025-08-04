@@ -283,6 +283,12 @@ class HealthcheckModel extends BaseDatabaseModel
         }
 
         require_once $pluginFile;
+        
+        // Also try to load helper.php if the class isn't found
+        $helperFile = JPATH_PLUGINS . '/' . $folder . '/' . $element . '/helper.php';
+        if (file_exists($helperFile)) {
+            require_once $helperFile;
+        }
 
         if (!class_exists($className)) {
             return;

@@ -170,8 +170,8 @@ class HtmlView extends BaseHtmlView
 
         // Default configuration - all plugins enabled
         $defaultConfig = [];
-        foreach ($this->providers as $provider) {
-            $providerKey = $this->getProviderKey($provider);
+        foreach ($this->providers as $providerName => $provider) {
+            $providerKey = $this->getProviderKey($providerName);
             $defaultConfig[$providerKey] = [
                 'enabled' => true,
                 'priority' => 10,
@@ -193,7 +193,7 @@ class HtmlView extends BaseHtmlView
      */
     protected function getProviderKey($provider): string
     {
-        return strtolower(str_replace(['\\', ' '], ['_', '_'], get_class($provider)));
+        return strtolower(str_replace(['\\', ' '], ['_', '_'], $provider));
     }
 
     /**
@@ -207,6 +207,7 @@ class HtmlView extends BaseHtmlView
      */
     public function isProviderEnabled($provider): bool
     {
+        // Provider is now a provider name string, not an object
         $key = $this->getProviderKey($provider);
         return $this->config[$key]['enabled'] ?? true;
     }
@@ -222,6 +223,7 @@ class HtmlView extends BaseHtmlView
      */
     public function getProviderPriority($provider): int
     {
+        // Provider is now a provider name string, not an object
         $key = $this->getProviderKey($provider);
         return $this->config[$key]['priority'] ?? 10;
     }

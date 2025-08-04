@@ -162,12 +162,12 @@ $document->addStyleDeclaration('
                     <ul class="nav nav-tabs mb-3" role="tablist">
                         <?php 
                         $categories = [];
-                        foreach ($this->providers as $provider) {
-                            $category = $provider->getCategory();
+                        foreach ($this->providers as $providerName => $provider) {
+                            $category = ($provider[0]['category'] ?? 'unknown');
                             if (!isset($categories[$category])) {
                                 $categories[$category] = [];
                             }
-                            $categories[$category][] = $provider;
+                            $categories[$category][$providerName] = $provider;
                         }
                         $firstCategory = true;
                         ?>
@@ -231,42 +231,43 @@ $document->addStyleDeclaration('
                                         <tbody class="sortable-providers" data-category="<?php echo $category; ?>">
                                             <?php 
                                             // Sort providers by priority
-                                            usort($categoryProviders, function($a, $b) {
-                                                return $this->getProviderPriority($a) <=> $this->getProviderPriority($b);
-                                            });
+                                            // Sort by provider name for now (no priority needed for discovery system)
+                                            ksort($categoryProviders);
                                             ?>
-                                            <?php foreach ($categoryProviders as $provider): ?>
+                                            <?php foreach ($categoryProviders as $providerName => $provider): ?>
                                                 <?php 
-                                                $providerKey = $this->getProviderKey($provider);
-                                                $isEnabled = $this->isProviderEnabled($provider);
-                                                $priority = $this->getProviderPriority($provider);
-                                                $metadata = $provider->getMetadata();
-                                                $displayFormat = $provider->getDisplayFormat();
+                                                // Provider is now an array of health check data, not an object
+                                                $providerKey = $providerName;
+                                                $isEnabled = true; // All discovered providers are enabled
+                                                $priority = 1;
+                                                $metadata = ['version' => '1.0.0', 'type' => 'discovered'];
+                                                $displayFormat = 'list';
                                                 
-                                                // Determine provider type
+                                                // Determine provider type based on provider name
                                                 $providerType = 'Plugin';
-                                                $className = get_class($provider);
-                                                if (strpos($className, 'ModuleAdapter') !== false) {
-                                                    $providerType = 'Module Adapter';
-                                                } elseif (strpos($className, 'HealthCheck') !== false) {
-                                                    $providerType = 'Built-in Plugin';
+                                                if (strpos($providerName, 'mod_') === 0) {
+                                                    $providerType = 'Module';
+                                                } elseif (strpos($providerName, '_') !== false) {
+                                                    $providerType = 'Plugin';
+                                                } else {
+                                                    $providerType = 'Discovered Provider';
                                                 }
                                                 ?>
-                                                <tr class="provider-row" data-provider="<?php echo $providerKey; ?>" data-provider-name="<?php echo htmlspecialchars($provider->getName()); ?>" tabindex="0" role="row" aria-describedby="provider-help-<?php echo $providerKey; ?>">
+                                                <tr class="provider-row" data-provider="<?php echo $providerKey; ?>" data-provider-name="<?php echo htmlspecialchars($providerName); ?>" tabindex="0" role="row" aria-describedby="provider-help-<?php echo $providerKey; ?>">
                                                     <td class="reorder-controls">
                                                         <!-- Keyboard accessible reorder buttons -->
-                                                        <div class="btn-group-vertical btn-group-sm" role="group" aria-label="Reorder <?php echo htmlspecialchars($provider->getName()); ?>">
+                                                        <div class="btn-group-vertical btn-group-sm" role="group" aria-label="Reorder <?php echo htmlspecialchars($providerName); ?>">
                                                             <button type="button" 
                                                                     class="btn btn-outline-secondary btn-sm move-up-btn" 
                                                                     onclick="healthChecker.moveProvider('<?php echo $providerKey; ?>', 'up')"
-                                                                    aria-label="Move <?php echo htmlspecialchars($provider->getName()); ?> up"
+                                                                    aria-label="Move <?php echo htmlspecialchars($providerName); ?> up"
                                                                     title="Move up">
                                                                 <span class="icon-chevron-up" aria-hidden="true"></span>
                                                             </button>
                                                             <button type="button" 
                                                                     class="btn btn-outline-secondary btn-sm move-down-btn" 
                                                                     onclick="healthChecker.moveProvider('<?php echo $providerKey; ?>', 'down')"
-                                                                    aria-label="Move <?php echo htmlspecialchars($provider->getName()); ?> down"
+                                                                    aria-label="Move <?php echo htmlspecialchars($providerName); ?> down"
                                                                     title="Move down">
                                                                 <span class="icon-chevron-down" aria-hidden="true"></span>
                                                             </button>
@@ -280,9 +281,9 @@ $document->addStyleDeclaration('
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center gap-2">
-                                                            <span class="icon-<?php echo $category === 'seo' ? 'search' : ($category === 'system' ? 'cog' : 'plugin'); ?>" aria-hidden="true"></span>
+                                                            <span class="icon-<?php echo $category === 'seo' ? 'search' : ($category === ($provider[0]['category'] ?? 'unknown') ? 'cog' : 'plugin'); ?>" aria-hidden="true"></span>
                                                             <div>
-                                                                <strong><?php echo htmlspecialchars($provider->getName()); ?></strong>
+                                                                <strong><?php echo htmlspecialchars($providerName); ?></strong>
                                                                 <?php if (!empty($metadata['description'])): ?>
                                                                     <br><small class="text-muted"><?php echo htmlspecialchars($metadata['description']); ?></small>
                                                                 <?php endif; ?>
@@ -299,7 +300,7 @@ $document->addStyleDeclaration('
                                                     </td>
                                                     <td>
                                                         <?php 
-                                                        $checks = $provider->getChecks();
+                                                        $checks = $provider;
                                                         $hasErrors = false;
                                                         $hasWarnings = false;
                                                         foreach ($checks as $check) {
@@ -343,7 +344,7 @@ $document->addStyleDeclaration('
                                                                    id="provider_<?php echo $providerKey; ?>_enabled"
                                                                    value="1" 
                                                                    <?php echo $isEnabled ? 'checked' : ''; ?>
-                                                                   aria-label="Enable <?php echo htmlspecialchars($provider->getName()); ?>">
+                                                                   aria-label="Enable <?php echo htmlspecialchars($providerName); ?>">
                                                         </div>
                                                     </td>
                                                     <td>

@@ -217,7 +217,8 @@ class HealthcheckconfigController extends FormController
      */
     protected function getProviderKey($provider): string
     {
-        return strtolower(str_replace(['\\', ' '], ['_', '_'], get_class($provider)));
+        // Provider is now a provider name string, not an object
+        return strtolower(str_replace(['\\', ' '], ['_', '_'], $provider));
     }
 
     /**
