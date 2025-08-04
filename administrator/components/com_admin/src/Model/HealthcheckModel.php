@@ -48,7 +48,7 @@ class HealthcheckModel extends BaseDatabaseModel
     {
         // Discover modules
         $this->discoverModules();
-        
+
         // Discover plugins
         $this->discoverPlugins();
     }
@@ -63,22 +63,22 @@ class HealthcheckModel extends BaseDatabaseModel
     protected function discoverModules(): void
     {
         $db = Factory::getDbo();
-        
+
         // Get all published administrator modules
         $query = $db->getQuery(true)
             ->select(['module', 'params'])
             ->from('#__modules')
             ->where('client_id = 1') // Administrator
             ->where('published = 1');
-            
+
         $db->setQuery($query);
-        
+
         try {
             $modules = $db->loadObjectList();
         } catch (Exception $e) {
             return;
         }
-        
+
         foreach ($modules as $module) {
             $this->checkModuleManifest($module->module);
         }
@@ -94,22 +94,22 @@ class HealthcheckModel extends BaseDatabaseModel
     protected function discoverPlugins(): void
     {
         $db = Factory::getDbo();
-        
+
         // Get all enabled plugins
         $query = $db->getQuery(true)
             ->select(['type', 'element', 'folder'])
             ->from('#__extensions')
             ->where('type = ' . $db->quote('plugin'))
             ->where('enabled = 1');
-            
+
         $db->setQuery($query);
-        
+
         try {
             $plugins = $db->loadObjectList();
         } catch (Exception $e) {
             return;
         }
-        
+
         foreach ($plugins as $plugin) {
             $this->checkPluginManifest($plugin->folder, $plugin->element);
         }
@@ -127,37 +127,36 @@ class HealthcheckModel extends BaseDatabaseModel
     protected function checkModuleManifest(string $moduleName): void
     {
         $manifestPath = JPATH_ADMINISTRATOR . '/modules/' . $moduleName . '/' . $moduleName . '.xml';
-        
+
         if (!file_exists($manifestPath)) {
             return;
         }
-        
+
         try {
             $xml = simplexml_load_file($manifestPath);
-            
+
             if ($xml === false || !isset($xml->healthcheck)) {
                 return;
             }
-            
+
             $healthcheck = $xml->healthcheck;
-            
+
             // Check if enabled
             if ((string) $healthcheck['enabled'] !== '1') {
                 return;
             }
-            
+
             // Extract provider details
             $provider = $healthcheck->provider;
             $className = (string) $provider['class'];
             $methodName = (string) $provider['method'];
-            
+
             if (empty($className) || empty($methodName)) {
                 return;
             }
-            
+
             // Call the module's health check method
             $this->callModuleHealthCheck($moduleName, $className, $methodName);
-            
         } catch (Exception $e) {
             // Log error but continue with other modules
             Factory::getApplication()->enqueueMessage(
@@ -181,29 +180,28 @@ class HealthcheckModel extends BaseDatabaseModel
     protected function callModuleHealthCheck(string $moduleName, string $className, string $methodName): void
     {
         $helperFile = JPATH_ADMINISTRATOR . '/modules/' . $moduleName . '/helper.php';
-        
+
         if (!file_exists($helperFile)) {
             return;
         }
-        
+
         require_once $helperFile;
-        
+
         if (!class_exists($className)) {
             return;
         }
-        
+
         if (!method_exists($className, $methodName)) {
             return;
         }
-        
+
         try {
             // Call the method and store results
             $healthData = call_user_func([$className, $methodName]);
-            
+
             if (is_array($healthData)) {
                 $this->moduleHealthChecks[$moduleName] = $healthData;
             }
-            
         } catch (Exception $e) {
             Factory::getApplication()->enqueueMessage(
                 'Error calling health check method for ' . $moduleName . ': ' . $e->getMessage(),
@@ -225,37 +223,36 @@ class HealthcheckModel extends BaseDatabaseModel
     protected function checkPluginManifest(string $folder, string $element): void
     {
         $manifestPath = JPATH_PLUGINS . '/' . $folder . '/' . $element . '/' . $element . '.xml';
-        
+
         if (!file_exists($manifestPath)) {
             return;
         }
-        
+
         try {
             $xml = simplexml_load_file($manifestPath);
-            
+
             if ($xml === false || !isset($xml->healthcheck)) {
                 return;
             }
-            
+
             $healthcheck = $xml->healthcheck;
-            
+
             // Check if enabled
             if ((string) $healthcheck['enabled'] !== '1') {
                 return;
             }
-            
+
             // Extract provider details
             $provider = $healthcheck->provider;
             $className = (string) $provider['class'];
             $methodName = (string) $provider['method'];
-            
+
             if (empty($className) || empty($methodName)) {
                 return;
             }
-            
+
             // Call the plugin's health check method
             $this->callPluginHealthCheck($folder, $element, $className, $methodName);
-            
         } catch (Exception $e) {
             // Log error but continue with other plugins
             Factory::getApplication()->enqueueMessage(
@@ -280,29 +277,28 @@ class HealthcheckModel extends BaseDatabaseModel
     protected function callPluginHealthCheck(string $folder, string $element, string $className, string $methodName): void
     {
         $pluginFile = JPATH_PLUGINS . '/' . $folder . '/' . $element . '/' . $element . '.php';
-        
+
         if (!file_exists($pluginFile)) {
             return;
         }
-        
+
         require_once $pluginFile;
-        
+
         if (!class_exists($className)) {
             return;
         }
-        
+
         if (!method_exists($className, $methodName)) {
             return;
         }
-        
+
         try {
             // Call the method and store results
             $healthData = call_user_func([$className, $methodName]);
-            
+
             if (is_array($healthData)) {
                 $this->moduleHealthChecks[$folder . '_' . $element] = $healthData;
             }
-            
         } catch (Exception $e) {
             Factory::getApplication()->enqueueMessage(
                 'Error calling health check method for plugin ' . $folder . '/' . $element . ': ' . $e->getMessage(),
@@ -322,12 +318,12 @@ class HealthcheckModel extends BaseDatabaseModel
     {
         // Discover modules with health check capabilities
         $this->discoverHealthCheckModules();
-        
+
         // Get all checks from discovered modules only
         $allChecks = [];
         $totalChecks = 0;
         $passedChecks = 0;
-        
+
         // Add discovered module health checks
         foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
             foreach ($moduleChecks as $check) {
@@ -335,13 +331,13 @@ class HealthcheckModel extends BaseDatabaseModel
                 if ($check['status'] === 'success') {
                     $passedChecks++;
                 }
-                
+
                 // Use check category or default to 'modules'
                 $category = $check['category'] ?? 'modules';
                 $allChecks[$category][] = $check;
             }
         }
-        
+
         // If no modules discovered, show informational message
         if (empty($this->moduleHealthChecks)) {
             $allChecks['system'][] = [
@@ -356,14 +352,14 @@ class HealthcheckModel extends BaseDatabaseModel
             $totalChecks = 1;
             $passedChecks = 1; // Info status counts as passed
         }
-        
+
         // Calculate overall score
         $score = $totalChecks > 0 ? round(($passedChecks / $totalChecks) * 100) : 100;
-        
+
         // Determine status based on score
         $statusClass = 'success';
         $statusText = Text::_('COM_ADMIN_HEALTH_CHECKER_STATUS_GOOD');
-        
+
         if ($score < 60) {
             $statusClass = 'danger';
             $statusText = Text::_('COM_ADMIN_HEALTH_CHECKER_STATUS_POOR');
@@ -371,7 +367,7 @@ class HealthcheckModel extends BaseDatabaseModel
             $statusClass = 'warning';
             $statusText = Text::_('COM_ADMIN_HEALTH_CHECKER_STATUS_FAIR');
         }
-        
+
         return [
             'overall_score' => $score,
             'status_class' => $statusClass,
@@ -395,7 +391,7 @@ class HealthcheckModel extends BaseDatabaseModel
     public function getExtensionData(): array
     {
         $extensionData = [];
-        
+
         // Get extension-related checks from discovered modules
         foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
             foreach ($moduleChecks as $check) {
@@ -416,7 +412,7 @@ class HealthcheckModel extends BaseDatabaseModel
                 }
             }
         }
-        
+
         // Fallback mock data if no extension providers are available
         if (empty($extensionData)) {
             return [
@@ -433,7 +429,7 @@ class HealthcheckModel extends BaseDatabaseModel
                 ]
             ];
         }
-        
+
         return $extensionData;
     }
 
@@ -447,7 +443,7 @@ class HealthcheckModel extends BaseDatabaseModel
     public function getCriticalIssues(): array
     {
         $criticalIssues = [];
-        
+
         // Get critical issues from discovered modules only
         foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
             foreach ($moduleChecks as $check) {
@@ -461,7 +457,7 @@ class HealthcheckModel extends BaseDatabaseModel
                 }
             }
         }
-        
+
         // If no critical issues found, return empty array
         return $criticalIssues;
     }
@@ -480,7 +476,7 @@ class HealthcheckModel extends BaseDatabaseModel
             'medium' => [],
             'ready' => []
         ];
-        
+
         // Generate recommendations from discovered modules only
         foreach ($this->moduleHealthChecks as $moduleName => $moduleChecks) {
             foreach ($moduleChecks as $check) {
@@ -491,7 +487,7 @@ class HealthcheckModel extends BaseDatabaseModel
                 }
             }
         }
-        
+
         // Add general ready-to-proceed items if no critical issues
         if (empty($recommendations['critical'])) {
             $recommendations['ready'] = [
@@ -500,7 +496,7 @@ class HealthcheckModel extends BaseDatabaseModel
                 Text::_('COM_ADMIN_HEALTH_CHECKER_RECOMMENDATION_PREPARE_ROLLBACK')
             ];
         }
-        
+
         return $recommendations;
     }
 
@@ -509,7 +505,7 @@ class HealthcheckModel extends BaseDatabaseModel
      *
      * @param   string  $status  Status key
      *
-     * @return  string  Localized status text
+     * @return  string  Localised status text
      *
      * @since   5.4
      */
@@ -528,7 +524,7 @@ class HealthcheckModel extends BaseDatabaseModel
      *
      * @param   string  $risk  Risk level key
      *
-     * @return  string  Localized risk text
+     * @return  string  Localised risk text
      *
      * @since   5.4
      */
@@ -537,7 +533,7 @@ class HealthcheckModel extends BaseDatabaseModel
         if ($risk === null) {
             return Text::_('COM_ADMIN_HEALTH_CHECKER_RISK_UNKNOWN');
         }
-        
+
         return match ($risk) {
             'low' => Text::_('COM_ADMIN_HEALTH_CHECKER_RISK_LOW'),
             'medium' => Text::_('COM_ADMIN_HEALTH_CHECKER_RISK_MEDIUM'),
@@ -573,5 +569,4 @@ class HealthcheckModel extends BaseDatabaseModel
         $this->discoverHealthCheckModules();
         return $this->moduleHealthChecks;
     }
-
 }

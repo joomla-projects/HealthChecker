@@ -41,11 +41,11 @@ class HealthcheckconfigController extends FormController
 
         $app = Factory::getApplication();
         $input = $app->getInput();
-        
+
         try {
             $providers = $input->get('providers', [], 'array');
             $global = $input->get('global', [], 'array');
-            
+
             // Process provider settings
             $providerConfig = [];
             foreach ($providers as $providerKey => $settings) {
@@ -55,7 +55,7 @@ class HealthcheckconfigController extends FormController
                     'settings' => $settings['settings'] ?? []
                 ];
             }
-            
+
             // Save to component parameters
             $db = Factory::getDbo();
             $query = $db->getQuery(true)
@@ -63,34 +63,33 @@ class HealthcheckconfigController extends FormController
                 ->from('#__extensions')
                 ->where('element = ' . $db->quote('com_admin'))
                 ->where('type = ' . $db->quote('component'));
-                
+
             $db->setQuery($query);
             $currentParams = $db->loadResult();
-            
+
             $params = $currentParams ? json_decode($currentParams, true) : [];
             $params['healthcheck_plugins'] = $providerConfig;
             $params['healthcheck_global'] = $global;
-            
+
             // Update database
             $query = $db->getQuery(true)
                 ->update('#__extensions')
                 ->set('params = ' . $db->quote(json_encode($params)))
                 ->where('element = ' . $db->quote('com_admin'))
                 ->where('type = ' . $db->quote('component'));
-                
+
             $db->setQuery($query);
             $db->execute();
-            
+
             $app->enqueueMessage(Text::_('COM_ADMIN_HEALTH_CHECKER_CONFIG_SAVED'), 'success');
-            
         } catch (\Exception $e) {
             $app->enqueueMessage(Text::_('COM_ADMIN_HEALTH_CHECKER_CONFIG_SAVE_ERROR') . ': ' . $e->getMessage(), 'error');
         }
-        
+
         // Redirect back to configuration
         $this->setRedirect(Route::_('index.php?option=com_admin&view=healthcheckconfig', false));
     }
-    
+
     /**
      * Test a specific provider via AJAX
      *
@@ -102,21 +101,21 @@ class HealthcheckconfigController extends FormController
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
-        
+
         // Check for request forgeries
         $this->checkToken();
-        
+
         try {
             $providerKey = $input->getCmd('provider');
-            
+
             if (empty($providerKey)) {
                 throw new \Exception('No provider specified');
             }
-            
+
             /** @var \Joomla\Component\Admin\Administrator\Model\HealthcheckModel $model */
             $model = $this->getModel('Healthcheck');
             $providers = $model->getHealthCheckProviders();
-            
+
             $targetProvider = null;
             foreach ($providers as $provider) {
                 if ($this->getProviderKey($provider) === $providerKey) {
@@ -124,14 +123,14 @@ class HealthcheckconfigController extends FormController
                     break;
                 }
             }
-            
+
             if (!$targetProvider) {
                 throw new \Exception('Provider not found: ' . $providerKey);
             }
-            
+
             // Execute the provider's checks
             $checks = $targetProvider->getChecks();
-            
+
             $response = [
                 'success' => true,
                 'provider' => $targetProvider->getName(),
@@ -139,16 +138,15 @@ class HealthcheckconfigController extends FormController
                 'checksCount' => count($checks),
                 'checks' => $checks
             ];
-            
+
             echo new JsonResponse($response);
-            
         } catch (\Exception $e) {
             echo new JsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
-        
+
         $app->close();
     }
-    
+
     /**
      * Reorder providers via AJAX
      *
@@ -160,13 +158,13 @@ class HealthcheckconfigController extends FormController
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
-        
+
         // Check for request forgeries
         $this->checkToken();
-        
+
         try {
             $providerOrder = $input->get('providerOrder', [], 'array');
-            
+
             // Get current configuration
             $db = Factory::getDbo();
             $query = $db->getQuery(true)
@@ -174,41 +172,40 @@ class HealthcheckconfigController extends FormController
                 ->from('#__extensions')
                 ->where('element = ' . $db->quote('com_admin'))
                 ->where('type = ' . $db->quote('component'));
-                
+
             $db->setQuery($query);
             $currentParams = $db->loadResult();
-            
+
             $params = $currentParams ? json_decode($currentParams, true) : [];
             $providerConfig = $params['healthcheck_plugins'] ?? [];
-            
+
             // Update priorities based on order
             foreach ($providerOrder as $index => $providerKey) {
                 if (isset($providerConfig[$providerKey])) {
                     $providerConfig[$providerKey]['priority'] = ($index + 1) * 10;
                 }
             }
-            
+
             $params['healthcheck_plugins'] = $providerConfig;
-            
+
             // Save back to database
             $query = $db->getQuery(true)
                 ->update('#__extensions')
                 ->set('params = ' . $db->quote(json_encode($params)))
                 ->where('element = ' . $db->quote('com_admin'))
                 ->where('type = ' . $db->quote('component'));
-                
+
             $db->setQuery($query);
             $db->execute();
-            
+
             echo new JsonResponse(['success' => true, 'message' => 'Provider order updated']);
-            
         } catch (\Exception $e) {
             echo new JsonResponse(['success' => false, 'message' => $e->getMessage()]);
         }
-        
+
         $app->close();
     }
-    
+
     /**
      * Get a unique key for a provider
      *
@@ -222,7 +219,7 @@ class HealthcheckconfigController extends FormController
     {
         return strtolower(str_replace(['\\', ' '], ['_', '_'], get_class($provider)));
     }
-    
+
     /**
      * Cancel operation
      *

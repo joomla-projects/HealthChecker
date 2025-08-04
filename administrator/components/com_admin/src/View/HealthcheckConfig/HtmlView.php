@@ -101,9 +101,9 @@ class HtmlView extends BaseHtmlView
     protected function addToolbar(): void
     {
         ToolbarHelper::title(Text::_('COM_ADMIN_HEALTH_CHECKER_CONFIG'), 'fas fa-cogs');
-        
+
         $toolbar = $this->getDocument()->getToolbar();
-        
+
         $toolbar->standardButton('save', 'JSAVE')
             ->icon('fas fa-save')
             ->onclick('Joomla.submitform(\'healthcheckconfig.save\');');
@@ -126,7 +126,7 @@ class HtmlView extends BaseHtmlView
     {
         /** @var WebAssetManager $wa */
         $wa = $this->getDocument()->getWebAssetManager();
-        
+
         // Use Bootstrap components for toggles and forms
         $wa->useScript('bootstrap.tab')
            ->useScript('bootstrap.collapse')
@@ -143,7 +143,7 @@ class HtmlView extends BaseHtmlView
     protected function loadPluginConfig(): array
     {
         $db = Factory::getDbo();
-        
+
         try {
             // Try to load from database - for now, we'll use a simple approach
             // In production, this might be stored in #__extensions or a custom table
@@ -152,10 +152,10 @@ class HtmlView extends BaseHtmlView
                 ->from('#__extensions')
                 ->where('element = ' . $db->quote('com_admin'))
                 ->where('type = ' . $db->quote('component'));
-                
+
             $db->setQuery($query);
             $paramsJson = $db->loadResult();
-            
+
             if ($paramsJson) {
                 $params = json_decode($paramsJson, true);
                 return $params['healthcheck_plugins'] ?? [];
@@ -167,7 +167,7 @@ class HtmlView extends BaseHtmlView
                 'warning'
             );
         }
-        
+
         // Default configuration - all plugins enabled
         $defaultConfig = [];
         foreach ($this->providers as $provider) {
@@ -178,7 +178,7 @@ class HtmlView extends BaseHtmlView
                 'settings' => []
             ];
         }
-        
+
         return $defaultConfig;
     }
 
