@@ -20,8 +20,9 @@ use Joomla\CMS\Layout\LayoutHelper;
 $model = $this->getModel();
 
 // Load accessibility CSS and JS
-HTMLHelper::_('stylesheet', 'administrator/components/com_admin/assets/css/healthcheck-a11y.css', ['version' => 'auto']);
-HTMLHelper::_('script', 'administrator/components/com_admin/assets/js/healthcheck-a11y.js', ['version' => 'auto']);
+$wa = \Joomla\CMS\Factory::getApplication()->getDocument()->getWebAssetManager();
+$wa->registerAndUseStyle('com_admin.healthcheck-a11y', 'administrator/components/com_admin/assets/css/healthcheck-a11y.css', [], ['version' => 'auto']);
+$wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/components/com_admin/assets/js/healthcheck-a11y.js', [], ['version' => 'auto']);
 
 ?>
 
