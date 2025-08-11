@@ -461,7 +461,7 @@ const extensionDetails = {
      */
     function showNotification(message, type = 'info') {
         // Use Joomla's built-in message system
-        if (typeof Joomla !== 'undefined' && Joomla.renderMessages) {
+        if (Joomla?.renderMessages) {
             const messages = {};
             messages[type] = [message];
             Joomla.renderMessages(messages);
