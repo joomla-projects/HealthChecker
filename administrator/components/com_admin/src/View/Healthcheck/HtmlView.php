@@ -108,9 +108,9 @@ class HtmlView extends BaseHtmlView
     protected function addToolbar(): void
     {
         ToolbarHelper::title(Text::_('COM_ADMIN_HEALTH_CHECKER'), 'fas fa-heartbeat');
-        
+
         $toolbar = $this->getDocument()->getToolbar();
-        
+
         $toolbar->standardButton('refresh', 'COM_ADMIN_HEALTH_CHECKER_RUN_SCAN')
             ->icon('icon-refresh')
             ->onclick('Joomla.submitbutton(\'healthcheck.scan\');');
@@ -133,11 +133,11 @@ class HtmlView extends BaseHtmlView
     {
         /** @var WebAssetManager $wa */
         $wa = $this->getDocument()->getWebAssetManager();
-        
+
         // Register and use HealthChecker assets
         $wa->registerAndUseScript('com_admin.healthcheck', 'administrator/components/com_admin/assets/js/healthcheck.js', [], ['defer' => true])
            ->registerAndUseStyle('com_admin.healthcheck', 'administrator/components/com_admin/assets/css/healthcheck.css');
-           
+
         // Use modern Bootstrap 5 features
         $wa->useScript('bootstrap.tab')
            ->useScript('bootstrap.modal');
