@@ -86,7 +86,7 @@ class HtmlView extends BaseHtmlView
         $lang->load('com_admin_healthchecker', JPATH_ADMINISTRATOR, null, false, true);
 
         /** @var HealthcheckModel $model */
-        $model                  = $this->getModel();
+        $model                  = new HealthcheckModel();
         $this->healthData       = $model->getHealthData();
         $this->extensionData    = $model->getExtensionData();
         $this->criticalIssues   = $model->getCriticalIssues();
@@ -112,12 +112,16 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
 
         $toolbar->standardButton('refresh', 'COM_ADMIN_HEALTH_CHECKER_RUN_SCAN')
-            ->icon('icon-refresh')
+            ->icon('fas fa-sync-alt')
             ->onclick('Joomla.submitbutton(\'healthcheck.scan\');');
 
         $toolbar->linkButton('download', 'COM_ADMIN_HEALTH_CHECKER_EXPORT_REPORT')
-            ->icon('icon-download')
+            ->icon('fas fa-download')
             ->url(Route::_('index.php?option=com_admin&view=healthcheck&format=json&' . Session::getFormToken() . '=1'));
+
+        $toolbar->linkButton('options', 'JTOOLBAR_OPTIONS')
+            ->icon('fas fa-cog')
+            ->url(Route::_('index.php?option=com_admin&view=healthcheckconfig'));
 
         $toolbar->help('Health_Checker');
     }
