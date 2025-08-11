@@ -19,6 +19,10 @@ use Joomla\CMS\Layout\LayoutHelper;
 // Helper functions for display
 $model = $this->getModel();
 
+// Load accessibility CSS and JS
+$wa = \Joomla\CMS\Factory::getApplication()->getDocument()->getWebAssetManager();
+$wa->registerAndUseStyle('com_admin.healthcheck-a11y', 'administrator/components/com_admin/assets/css/healthcheck-a11y.css', [], ['version' => 'auto']);
+$wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/components/com_admin/assets/js/healthcheck-a11y.js', [], ['version' => 'auto']);
 ?>
 
 <!-- Health Checker Container using Atum/Bootstrap classes -->
@@ -102,7 +106,7 @@ $model = $this->getModel();
                     </span>
                 </div>
                 <div class="card-body">
-                    <?php foreach ($this->criticalIssues as $issue): ?>
+                    <?php foreach ($this->criticalIssues as $issue) : ?>
                         <div class="alert alert-<?php echo $issue['severity']; ?> py-2 mb-2">
                             <strong><?php echo $issue['title']; ?>:</strong>
                             <?php echo $issue['description']; ?>
@@ -124,39 +128,36 @@ $model = $this->getModel();
                     </h3>
                 </div>
                 <div class="card-body">
-                    <?php 
+                    <?php
                     $recommendationLevels = ['critical', 'medium', 'ready'];
                     $levelNames = [
-                        Text::_('COM_ADMIN_HEALTH_CHECKER_CRITICAL_FIRST'), 
-                        Text::_('COM_ADMIN_HEALTH_CHECKER_MEDIUM_PRIORITY'), 
+                        Text::_('COM_ADMIN_HEALTH_CHECKER_CRITICAL_FIRST'),
+                        Text::_('COM_ADMIN_HEALTH_CHECKER_MEDIUM_PRIORITY'),
                         Text::_('COM_ADMIN_HEALTH_CHECKER_READY_TO_PROCEED')
                     ];
                     $levelClasses = ['danger', 'warning', 'success'];
-                    
-                    foreach ($recommendationLevels as $index => $level): 
+
+                    foreach ($recommendationLevels as $index => $level) :
                         $levelRecommendations = $this->recommendations[$level] ?? [];
-                        if (!empty($levelRecommendations)):
-                    ?>
-                        <div class="healthchecker-expandable mb-3">
-                            <div class="healthchecker-expandable-header d-flex justify-content-between align-items-center p-2 border rounded cursor-pointer">
-                                <h5 class="text-<?php echo $levelClasses[$index]; ?> mb-0"><?php echo $levelNames[$index]; ?></h5>
-                                <span class="icon-chevron-down"></span>
+                        if (!empty($levelRecommendations)) : ?>
+                            <div class="healthchecker-expandable mb-3">
+                                <div class="healthchecker-expandable-header d-flex justify-content-between align-items-center p-2 border rounded cursor-pointer">
+                                    <h5 class="text-<?php echo $levelClasses[$index]; ?> mb-0"><?php echo $levelNames[$index]; ?></h5>
+                                    <span class="icon-chevron-down"></span>
+                                </div>
+                                <div class="healthchecker-expandable-content mt-2" style="display: none;">
+                                    <ul class="list-unstyled">
+                                        <?php foreach ($levelRecommendations as $recommendation) : ?>
+                                            <li class="mb-1 d-flex align-items-start gap-2">
+                                                <span class="icon-check text-<?php echo $levelClasses[$index]; ?> mt-1" aria-hidden="true"></span>
+                                                <?php echo $recommendation; ?>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="healthchecker-expandable-content mt-2" style="display: none;">
-                                <ul class="list-unstyled">
-                                    <?php foreach ($levelRecommendations as $recommendation): ?>
-                                        <li class="mb-1 d-flex align-items-start gap-2">
-                                            <span class="icon-check text-<?php echo $levelClasses[$index]; ?> mt-1" aria-hidden="true"></span>
-                                            <?php echo $recommendation; ?>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        </div>
-                    <?php 
-                        endif;
-                    endforeach; 
-                    ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>

@@ -14,11 +14,12 @@ use Joomla\CMS\Language\Text;
 
 /** @var \Joomla\Component\Admin\Administrator\View\Healthcheck\HtmlView $this */
 
+/** @var \Joomla\Component\Admin\Administrator\Model\HealthcheckModel $model */
 $model = $this->getModel();
 
 // Helper functions
-$getStatusClass = function($status) {
-    return match($status) {
+$getStatusClass = function ($status) {
+    return match ($status) {
         'compatible' => 'success',
         'needs_update' => 'warning',
         'incompatible' => 'danger',
@@ -26,10 +27,10 @@ $getStatusClass = function($status) {
     };
 };
 
-$getRiskClass = function($risk) {
-    return match($risk) {
+$getRiskClass = function ($risk) {
+    return match ($risk) {
         'low' => 'success',
-        'medium' => 'warning', 
+        'medium' => 'warning',
         'high' => 'danger',
         default => 'secondary'
     };
@@ -63,12 +64,12 @@ $getRiskClass = function($risk) {
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($this->extensionData as $extension): ?>
+            <?php foreach ($this->extensionData as $extension) : ?>
                 <tr class="healthchecker-extension-row" data-status="<?php echo $extension['status']; ?>">
                     <td>
                         <div>
                             <strong><?php echo $this->escape($extension['name']); ?></strong>
-                            <?php if (!empty($extension['author'])): ?>
+                            <?php if (!empty($extension['author'])) : ?>
                                 <br><small class="text-muted"><?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_BY'); ?> <?php echo $this->escape($extension['author']); ?></small>
                             <?php endif; ?>
                         </div>
@@ -83,10 +84,10 @@ $getRiskClass = function($risk) {
                               style="width: fit-content;"
                               role="status"
                               aria-label="Status: <?php echo $model->getStatusText($extension['status']); ?>">
-                            <?php 
+                            <?php
                             $icons = [
                                 'compatible' => 'check',
-                                'needs_update' => 'warning', 
+                                'needs_update' => 'warning',
                                 'incompatible' => 'times'
                             ];
                             $icon = $icons[$extension['status']] ?? 'question';
