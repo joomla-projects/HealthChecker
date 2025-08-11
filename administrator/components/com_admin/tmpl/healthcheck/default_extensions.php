@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
 
 /** @var \Joomla\Component\Admin\Administrator\View\Healthcheck\HtmlView $this */
 
+/** @var \Joomla\Component\Admin\Administrator\Model\HealthcheckModel $model */
 $model = $this->getModel();
 
 // Helper functions
