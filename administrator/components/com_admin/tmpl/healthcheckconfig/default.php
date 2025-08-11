@@ -151,16 +151,16 @@ $document->addStyleDeclaration('
                 </h3>
             </div>
             <div class="card-body">
-                <?php if (empty($this->providers)): ?>
+                <?php if (empty($this->providers)) : ?>
                     <div class="alert alert-info">
                         <span class="icon-info-circle" aria-hidden="true"></span>
                         <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_NO_PROVIDERS_FOUND'); ?>
                     </div>
-                <?php else: ?>
-                    
+                <?php else : ?>
+
                     <!-- Provider Categories Tabs -->
                     <ul class="nav nav-tabs mb-3" role="tablist">
-                        <?php 
+                        <?php
                         $categories = [];
                         foreach ($this->providers as $providerName => $provider) {
                             $category = ($provider[0]['category'] ?? 'unknown');
@@ -171,7 +171,7 @@ $document->addStyleDeclaration('
                         }
                         $firstCategory = true;
                         ?>
-                        <?php foreach ($categories as $category => $categoryProviders): ?>
+                        <?php foreach ($categories as $category => $categoryProviders) : ?>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link <?php echo $firstCategory ? 'active' : ''; ?>" 
                                         id="<?php echo $category; ?>-tab" 
@@ -190,9 +190,9 @@ $document->addStyleDeclaration('
 
                     <!-- Tab Content -->
                     <div class="tab-content">
-                        <?php 
+                        <?php
                         $firstCategory = true;
-                        foreach ($categories as $category => $categoryProviders): ?>
+                        foreach ($categories as $category => $categoryProviders) : ?>
                             <div class="tab-pane fade <?php echo $firstCategory ? 'show active' : ''; ?>" 
                                  id="<?php echo $category; ?>-panel" 
                                  role="tabpanel" 
@@ -229,20 +229,20 @@ $document->addStyleDeclaration('
                                             </tr>
                                         </thead>
                                         <tbody class="sortable-providers" data-category="<?php echo $category; ?>">
-                                            <?php 
+                                            <?php
                                             // Sort providers by priority
                                             // Sort by provider name for now (no priority needed for discovery system)
                                             ksort($categoryProviders);
                                             ?>
-                                            <?php foreach ($categoryProviders as $providerName => $provider): ?>
-                                                <?php 
+                                            <?php foreach ($categoryProviders as $providerName => $provider) : ?>
+                                                <?php
                                                 // Provider is now an array of health check data, not an object
                                                 $providerKey = $providerName;
                                                 $isEnabled = true; // All discovered providers are enabled
                                                 $priority = 1;
                                                 $metadata = ['version' => '1.0.0', 'type' => 'discovered'];
                                                 $displayFormat = 'list';
-                                                
+
                                                 // Determine provider type based on provider name
                                                 $providerType = 'Plugin';
                                                 if (strpos($providerName, 'mod_') === 0) {
@@ -284,7 +284,7 @@ $document->addStyleDeclaration('
                                                             <span class="icon-<?php echo $category === 'seo' ? 'search' : ($category === ($provider[0]['category'] ?? 'unknown') ? 'cog' : 'plugin'); ?>" aria-hidden="true"></span>
                                                             <div>
                                                                 <strong><?php echo htmlspecialchars($providerName); ?></strong>
-                                                                <?php if (!empty($metadata['description'])): ?>
+                                                                <?php if (!empty($metadata['description'])) : ?>
                                                                     <br><small class="text-muted"><?php echo htmlspecialchars($metadata['description']); ?></small>
                                                                 <?php endif; ?>
                                                             </div>
@@ -294,20 +294,24 @@ $document->addStyleDeclaration('
                                                         <span class="badge bg-<?php echo $providerType === 'Module Adapter' ? 'info' : 'primary'; ?>">
                                                             <?php echo $providerType; ?>
                                                         </span>
-                                                        <?php if ($displayFormat !== 'status'): ?>
+                                                        <?php if ($displayFormat !== 'status') : ?>
                                                             <br><small class="text-muted">Format: <?php echo $displayFormat; ?></small>
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <?php 
+                                                        <?php
                                                         $checks = $provider;
                                                         $hasErrors = false;
                                                         $hasWarnings = false;
                                                         foreach ($checks as $check) {
-                                                            if ($check['status'] === 'error') $hasErrors = true;
-                                                            if ($check['status'] === 'warning') $hasWarnings = true;
+                                                            if ($check['status'] === 'error') {
+                                                                $hasErrors = true;
+                                                            }
+                                                            if ($check['status'] === 'warning') {
+                                                                $hasWarnings = true;
+                                                            }
                                                         }
-                                                        
+
                                                         if ($hasErrors) {
                                                             $statusClass = 'danger';
                                                             $statusIcon = 'times';
@@ -356,7 +360,7 @@ $document->addStyleDeclaration('
                                                                 <span class="icon-play" aria-hidden="true"></span>
                                                                 <span class="visually-hidden">Test</span>
                                                             </button>
-                                                            <?php if (!empty($metadata['version'])): ?>
+                                                            <?php if (!empty($metadata['version'])) : ?>
                                                                 <button type="button" 
                                                                         class="btn btn-sm btn-outline-info" 
                                                                         onclick="healthChecker.showProviderInfo('<?php echo $providerKey; ?>')"
