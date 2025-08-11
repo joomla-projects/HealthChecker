@@ -176,18 +176,22 @@ $wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/component
                     </span>
                 </div>
                 <div class="card-body">
-                    <?php foreach ($this->healthData['core_checks'] as $checkType => $checks): ?>
-                        <?php if (is_array($checks) && !empty($checks)): ?>
+                    <?php foreach ($this->healthData['core_checks'] as $checkType => $checks) : ?>
+                        <?php if (is_array($checks) && !empty($checks)) : ?>
                             <div class="check-section mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h6 class="mb-0"><?php echo ucfirst(str_replace('_', ' ', $checkType)) . ' ' . Text::_('COM_ADMIN_HEALTH_CHECKER_CHECKS'); ?></h6>
-                                    <?php 
+                                    <?php
                                     // Determine overall status for this category
                                     $hasErrors = false;
                                     $hasWarnings = false;
                                     foreach ($checks as $check) {
-                                        if ($check['status'] === 'error') $hasErrors = true;
-                                        if ($check['status'] === 'warning') $hasWarnings = true;
+                                        if ($check['status'] === 'error') {
+                                            $hasErrors = true;
+                                        }
+                                        if ($check['status'] === 'warning') {
+                                            $hasWarnings = true;
+                                        }
                                     }
                                     $overallStatus = $hasErrors ? 'danger' : ($hasWarnings ? 'warning' : 'success');
                                     $statusIcons = ['success' => 'check', 'warning' => 'warning', 'danger' => 'times'];
@@ -199,13 +203,13 @@ $wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/component
                                     </span>
                                 </div>
                                 
-                                <?php foreach ($checks as $check): ?>
+                                <?php foreach ($checks as $check) : ?>
                                     <div class="check-detail d-flex justify-content-between align-items-center mb-1">
                                         <span class="text-muted small"><?php echo htmlspecialchars($check['title'], ENT_QUOTES, 'UTF-8'); ?></span>
                                         <span class="text-<?php echo $check['status'] === 'success' ? 'success' : 'warning'; ?>" 
                                               role="status" 
                                               aria-label="<?php echo $check['status'] === 'success' ? 'Check passed' : 'Check needs review'; ?>: <?php echo htmlspecialchars($check['message'], ENT_QUOTES, 'UTF-8'); ?>">
-                                            <?php 
+                                            <?php
                                             $checkIcon = $check['status'] === 'success' ? 'check' : 'warning';
                                             $checkStatus = $check['status'] === 'success' ? 'passed' : 'needs review';
                                             ?>
