@@ -137,7 +137,7 @@ $wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/component
                     </span>
                 </div>
                 <div class="card-body">
-                    <?php foreach ($this->criticalIssues as $issue): ?>
+                    <?php foreach ($this->criticalIssues as $issue) : ?>
                         <div class="alert alert-<?php echo $issue['severity']; ?> py-2 mb-2">
                             <strong><?php echo $issue['title']; ?>:</strong>
                             <?php echo $issue['description']; ?>
@@ -159,39 +159,36 @@ $wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/component
                     </h3>
                 </div>
                 <div class="card-body">
-                    <?php 
+                    <?php
                     $recommendationLevels = ['critical', 'medium', 'ready'];
                     $levelNames = [
-                        Text::_('COM_ADMIN_HEALTH_CHECKER_CRITICAL_FIRST'), 
-                        Text::_('COM_ADMIN_HEALTH_CHECKER_MEDIUM_PRIORITY'), 
+                        Text::_('COM_ADMIN_HEALTH_CHECKER_CRITICAL_FIRST'),
+                        Text::_('COM_ADMIN_HEALTH_CHECKER_MEDIUM_PRIORITY'),
                         Text::_('COM_ADMIN_HEALTH_CHECKER_READY_TO_PROCEED')
                     ];
                     $levelClasses = ['danger', 'warning', 'success'];
-                    
-                    foreach ($recommendationLevels as $index => $level): 
+
+                    foreach ($recommendationLevels as $index => $level) :
                         $levelRecommendations = $this->recommendations[$level] ?? [];
-                        if (!empty($levelRecommendations)):
-                    ?>
-                        <div class="healthchecker-expandable mb-3">
-                            <div class="healthchecker-expandable-header d-flex justify-content-between align-items-center p-2 border rounded cursor-pointer">
-                                <h5 class="text-<?php echo $levelClasses[$index]; ?> mb-0"><?php echo $levelNames[$index]; ?></h5>
-                                <span class="icon-chevron-down"></span>
+                        if (!empty($levelRecommendations)) : ?>
+                            <div class="healthchecker-expandable mb-3">
+                                <div class="healthchecker-expandable-header d-flex justify-content-between align-items-center p-2 border rounded cursor-pointer">
+                                    <h5 class="text-<?php echo $levelClasses[$index]; ?> mb-0"><?php echo $levelNames[$index]; ?></h5>
+                                    <span class="icon-chevron-down"></span>
+                                </div>
+                                <div class="healthchecker-expandable-content mt-2" style="display: none;">
+                                    <ul class="list-unstyled">
+                                        <?php foreach ($levelRecommendations as $recommendation) : ?>
+                                            <li class="mb-1 d-flex align-items-start gap-2">
+                                                <span class="icon-check text-<?php echo $levelClasses[$index]; ?> mt-1" aria-hidden="true"></span>
+                                                <?php echo $recommendation; ?>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="healthchecker-expandable-content mt-2" style="display: none;">
-                                <ul class="list-unstyled">
-                                    <?php foreach ($levelRecommendations as $recommendation): ?>
-                                        <li class="mb-1 d-flex align-items-start gap-2">
-                                            <span class="icon-check text-<?php echo $levelClasses[$index]; ?> mt-1" aria-hidden="true"></span>
-                                            <?php echo $recommendation; ?>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        </div>
-                    <?php 
-                        endif;
-                    endforeach; 
-                    ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -210,12 +207,12 @@ $wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/component
                     </span>
                 </div>
                 <div class="card-body">
-                    <?php foreach ($this->healthData['core_checks'] as $checkType => $checkData): ?>
+                    <?php foreach ($this->healthData['core_checks'] as $checkType => $checkData) : ?>
                         <div class="check-section mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h6 class="mb-0"><?php echo ucfirst(str_replace('_', ' ', $checkType)) . ' ' . Text::_('COM_ADMIN_HEALTH_CHECKER_CHECKS'); ?></h6>
                                 <span class="badge bg-<?php echo $checkData['status']; ?> d-flex align-items-center gap-1">
-                                    <?php 
+                                    <?php
                                     $statusIcons = ['success' => 'check', 'warning' => 'warning', 'danger' => 'times'];
                                     $icon = $statusIcons[$checkData['status']] ?? 'question';
                                     ?>
@@ -223,20 +220,20 @@ $wa->registerAndUseScript('com_admin.healthcheck-a11y', 'administrator/component
                                     <?php echo ($checkData['status'] === 'success' ? Text::_('COM_ADMIN_HEALTH_CHECKER_PASS') : Text::_('COM_ADMIN_HEALTH_CHECKER_REVIEW')); ?>
                                 </span>
                             </div>
-                            
-                            <?php if (isset($checkData['details'])): ?>
-                                <?php foreach ($checkData['details'] as $detail => $value): ?>
+
+                            <?php if (isset($checkData['details'])) : ?>
+                                <?php foreach ($checkData['details'] as $detail => $value) : ?>
                                     <div class="check-detail d-flex justify-content-between align-items-center mb-1">
                                         <span class="text-muted small"><?php echo ucfirst(str_replace('_', ' ', $detail)); ?></span>
-                                        <?php if (is_bool($value)): ?>
+                                        <?php if (is_bool($value)) : ?>
                                             <span class="text-<?php echo $value ? 'success' : 'danger'; ?>">
                                                 <span class="icon-<?php echo $value ? 'check' : 'times'; ?>" aria-hidden="true"></span>
                                             </span>
-                                        <?php elseif (is_numeric($value)): ?>
+                                        <?php elseif (is_numeric($value)) : ?>
                                             <span class="text-<?php echo $value >= 80 ? 'success' : 'warning'; ?>"><?php echo $value; ?>%</span>
                                         <?php endif; ?>
                                     </div>
-                                    <?php if (is_numeric($value)): ?>
+                                    <?php if (is_numeric($value)) : ?>
                                         <div class="progress mb-2" style="height: 4px;">
                                             <div class="progress-bar bg-<?php echo $value >= 80 ? 'success' : 'warning'; ?>" 
                                                  style="width: <?php echo $value; ?>%" role="progressbar" 
