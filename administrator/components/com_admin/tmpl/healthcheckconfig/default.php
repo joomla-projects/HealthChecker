@@ -157,7 +157,6 @@ $document->addStyleDeclaration('
                         <?php echo Text::_('COM_ADMIN_HEALTH_CHECKER_NO_PROVIDERS_FOUND'); ?>
                     </div>
                 <?php else : ?>
-
                     <!-- Provider Categories Tabs -->
                     <ul class="nav nav-tabs mb-3" role="tablist">
                         <?php
