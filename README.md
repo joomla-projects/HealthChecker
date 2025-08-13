@@ -23,6 +23,11 @@ Interesting in helping?
 --------------------
 * Join us on MatterMost: [6.0 Health Checker](https://joomlacommunity.cloud.mattermost.com/main/channels/60-health-checker)
 
+To check what's cooking
+--------------------
+Download the code, build the instance and install on your local server.
+Once installed, go to:
+`htpps://yoursite.local/administrator/index.php?option=com_admin&view=healthcheck`
 
 Copyright
 ---------------------
