@@ -20,6 +20,8 @@ Being able to identify third-party extensions that are not adhering to the lates
   
 * The concept behind the Joomla Health Checker is simple. While the existing update checker focuses solely on whether your extensions are current, the Health Checker takes a 360-degree view of your website's wellbeing.
 
+* In conceptualizing the Joomla Health Checker, three user personas were created. (see: [Joomla Health Checker Personas](https://drive.google.com/file/d/11xDQ5wXL3xLEb9-e_oWlWeUJx8xTfn2V/view?usp=sharing_))
+
 Joomla Health Checker Core Features
 -----------------------------------
 - Code Analysis
@@ -49,7 +51,6 @@ User Interface
 - Results View
 - Settings
   
-
 Interesting in helping?
 --------------------
 * Join us on MatterMost: [6.0 Health Checker](https://joomlacommunity.cloud.mattermost.com/main/channels/60-health-checker)
