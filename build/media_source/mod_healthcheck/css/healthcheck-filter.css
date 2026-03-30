@@ -18,8 +18,8 @@
   font-size: .75rem;
   font-weight: 500;
   line-height: 1.5;
-  border-radius: .25rem;
   flex: 0 0 auto !important;
+  border-radius: .25rem;
   transition: all .2s ease-in-out;
 }
 
@@ -70,12 +70,12 @@
 /* Gauge */
 
 .healthcheck-gauge {
-  margin: 15px;
   padding: 15px;
+  margin: 15px;
   background-color: #fff;
-  border-radius: 8px;
   /* Make it clear this is focusable */
   cursor: default;
+  border-radius: 8px;
   /* Ensure sufficient focus indicator */
   transition: box-shadow .15s ease-in-out, border-color .15s ease-in-out;
 }
@@ -118,11 +118,11 @@
 }
 
 .gauge-debug {
+  padding-top: 5px;
   font-family: monospace;
   font-size: 10px;
-  padding-top: 5px;
-  border-top: 1px solid #dee2e6;
   color: #6c757d;
+  border-top: 1px solid #dee2e6;
 }
 
 .gauge-link {
@@ -131,8 +131,8 @@
 
 .gauge-link::before {
   position: absolute;
-  top:5px;
-  left:5px;
+  top: 5px;
+  left: 5px;
 }
 
 .gauge-link:hover,
