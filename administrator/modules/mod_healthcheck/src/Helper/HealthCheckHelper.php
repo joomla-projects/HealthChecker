@@ -111,8 +111,8 @@ class HealthCheckHelper
             $application = Factory::getApplication();
         }
 
-        $key     = (string) $params;
-        $context = (string) $params->get('context', 'general');
+        $key      = (string) $params;
+        $context  = (string) $params->get('context', 'general');
         $property = $type; // gauges, buttons, lists, etc.
 
         if (!isset($this->{$property}[$key])) {
@@ -178,20 +178,20 @@ class HealthCheckHelper
     public function getGauges(Registry $params, ?CMSApplication $application = null)
     {
         $defaults = [
-            'score'                     => null,
-            'unit'                      => null,
-            'score_min'                 => null,
-            'score_max'                 => null,
-            'score_threshold_warning'   => null,
-            'score_threshold_success'   => null,
-            'label'                     => null,
-            'sublabel'                  => null,
-            'note'                      => null,
-            'link'                      => null,
-            'link_title'                => null,
-            'access'                    => true,
-            'class'                     => null,
-            'group'                     => 'general',
+            'score'                   => null,
+            'unit'                    => null,
+            'score_min'               => null,
+            'score_max'               => null,
+            'score_threshold_warning' => null,
+            'score_threshold_success' => null,
+            'label'                   => null,
+            'sublabel'                => null,
+            'note'                    => null,
+            'link'                    => null,
+            'link_title'              => null,
+            'access'                  => true,
+            'class'                   => null,
+            'group'                   => 'general',
         ];
 
         $requiredFields = [
@@ -268,10 +268,10 @@ class HealthCheckHelper
     public function getLists(Registry $params, ?CMSApplication $application = null)
     {
         $defaults = [
-            'items'    => null,
-            'access'  => true,
-            'class'   => null,
-            'group'   => 'general',
+            'items'  => null,
+            'access' => true,
+            'class'  => null,
+            'group'  => 'general',
         ];
 
         $requiredFields = [
@@ -310,7 +310,7 @@ class HealthCheckHelper
             'access'  => true,
             'class'   => null,
             'group'   => 'general',
-            'helper' => $this,
+            'helper'  => $this,
         ];
 
         $requiredFields = [
@@ -382,10 +382,10 @@ class HealthCheckHelper
     public function getLeading(Registry $params, ?CMSApplication $application = null)
     {
         $defaults = [
-            'info'    => null,
-            'access'  => true,
-            'class'   => null,
-            'group'   => 'general',
+            'info'   => null,
+            'access' => true,
+            'class'  => null,
+            'group'  => 'general',
         ];
 
         $requiredFields = [
@@ -415,10 +415,10 @@ class HealthCheckHelper
     public function getFooter(Registry $params, ?CMSApplication $application = null)
     {
         $defaults = [
-            'info'    => null,
-            'access'  => true,
-            'class'   => null,
-            'group'   => 'general',
+            'info'   => null,
+            'access' => true,
+            'class'  => null,
+            'group'  => 'general',
         ];
 
         $requiredFields = [
