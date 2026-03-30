@@ -440,7 +440,7 @@ class HealthCheckHelper
     {
         $key   = $column['key'] ?? '';
         $type  = $column['type'] ?? 'text';
-        $value = is_object($item) ? ($item->$key ?? '') : ($item[$key] ?? '');
+        $value = \is_object($item) ? ($item->$key ?? '') : ($item[$key] ?? '');
 
         switch ($type) {
             case 'badge':
@@ -481,7 +481,7 @@ class HealthCheckHelper
                     ($isTrue ? $trueText : $falseText) . '</span>';
 
             case 'progress':
-                $percentage = (float) $value;
+                $percentage    = (float) $value;
                 $progressClass = $column['progressClass'] ?? 'primary';
                 if (\is_callable($column['progressClass'])) {
                     $progressClass = \call_user_func($column['progressClass'], $value, $item, $rowIndex);
@@ -516,7 +516,7 @@ class HealthCheckHelper
             default:
                 $maxLength = $column['maxLength'] ?? null;
                 $text      = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-                if ($maxLength && strlen($text) > $maxLength) {
+                if ($maxLength && \strlen($text) > $maxLength) {
                     $text = substr($text, 0, $maxLength) . '...';
                 }
 
