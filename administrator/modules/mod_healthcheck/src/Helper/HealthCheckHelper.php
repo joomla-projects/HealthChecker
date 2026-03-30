@@ -123,7 +123,7 @@ class HealthCheckHelper
 
             PluginHelper::importPlugin('healthcheck');
 
-            $arrays = (array) $application->triggerEvent(
+            $arrays = (array) $application->getDispatcher()->dispatch(
                 $eventName,
                 new HealthChecksEvent($eventName, ['context' => $context])
             );
