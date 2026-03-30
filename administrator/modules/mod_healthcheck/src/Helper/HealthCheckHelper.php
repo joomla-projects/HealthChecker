@@ -196,7 +196,7 @@ class HealthCheckHelper
 
         $requiredFields = [
             ['score'], // Must have score
-            ['unit']   // Must have unit
+            ['unit'],  // Must have unit
         ];
 
         return $this->getHealthCheckData(
@@ -239,7 +239,7 @@ class HealthCheckHelper
 
         $requiredFields = [
             ['link'],
-            ['text', 'name'] // Must have either text or name
+            ['text', 'name'], // Must have either text or name
         ];
 
         return $this->getHealthCheckData(
@@ -275,7 +275,7 @@ class HealthCheckHelper
         ];
 
         $requiredFields = [
-            ['items']
+            ['items'],
         ];
 
         return $this->getHealthCheckData(
@@ -315,7 +315,7 @@ class HealthCheckHelper
 
         $requiredFields = [
             ['columns'],
-            ['data'] // Must have either text or name
+            ['data'], // Must have either text or name
         ];
 
         return $this->getHealthCheckData(
@@ -356,7 +356,7 @@ class HealthCheckHelper
 
         $requiredFields = [
             ['link'],
-            ['text', 'name'] // Must have either text or name
+            ['text', 'name'], // Must have either text or name
         ];
 
         return $this->getHealthCheckData(
@@ -389,7 +389,7 @@ class HealthCheckHelper
         ];
 
         $requiredFields = [
-            ['info'] // Must have info
+            ['info'], // Must have info
         ];
 
         return $this->getHealthCheckData(
@@ -422,7 +422,7 @@ class HealthCheckHelper
         ];
 
         $requiredFields = [
-            ['info'] // Must have info
+            ['info'], // Must have info
         ];
 
         return $this->getHealthCheckData(
@@ -438,50 +438,55 @@ class HealthCheckHelper
     // Function to render cell content based on column type
     public function renderTableCellContent($column, $item, $rowIndex)
     {
-        $key = $column['key'] ?? '';
-        $type = $column['type'] ?? 'text';
+        $key   = $column['key'] ?? '';
+        $type  = $column['type'] ?? 'text';
         $value = is_object($item) ? ($item->$key ?? '') : ($item[$key] ?? '');
 
         switch ($type) {
             case 'badge':
                 $badgeClass = $column['badgeClass'] ?? 'secondary';
-                if (is_callable($column['badgeClass'])) {
-                    $badgeClass = call_user_func($column['badgeClass'], $value, $item, $rowIndex);
+                if (\is_callable($column['badgeClass'])) {
+                    $badgeClass = \call_user_func($column['badgeClass'], $value, $item, $rowIndex);
                 }
+
                 return '<span class="badge bg-' . htmlspecialchars($badgeClass, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '</span>';
 
             case 'link':
                 $url = $column['url'] ?? '';
-                if (is_callable($column['url'])) {
-                    $url = call_user_func($column['url'], $value, $item, $rowIndex);
+                if (\is_callable($column['url'])) {
+                    $url = \call_user_func($column['url'], $value, $item, $rowIndex);
                 }
                 $title = $column['linkTitle'] ?? '';
-                if (is_callable($column['linkTitle'])) {
-                    $title = call_user_func($column['linkTitle'], $value, $item, $rowIndex);
+                if (\is_callable($column['linkTitle'])) {
+                    $title = \call_user_func($column['linkTitle'], $value, $item, $rowIndex);
                 }
+
                 return '<a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '"' .
                     ($title ? ' title="' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '"' : '') . '>' .
                     htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '</a>';
 
             case 'date':
                 $format = $column['dateFormat'] ?? Text::_('DATE_FORMAT_LC4');
+
                 return HTMLHelper::_('date', $value, $format);
 
             case 'boolean':
-                $trueText = $column['trueText'] ?? Text::_('JYES');
-                $falseText = $column['falseText'] ?? Text::_('JNO');
-                $trueClass = $column['trueClass'] ?? 'success';
+                $trueText   = $column['trueText'] ?? Text::_('JYES');
+                $falseText  = $column['falseText'] ?? Text::_('JNO');
+                $trueClass  = $column['trueClass'] ?? 'success';
                 $falseClass = $column['falseClass'] ?? 'danger';
-                $isTrue = (bool) $value;
+                $isTrue     = (bool) $value;
+
                 return '<span class="badge bg-' . ($isTrue ? $trueClass : $falseClass) . '">' .
                     ($isTrue ? $trueText : $falseText) . '</span>';
 
             case 'progress':
                 $percentage = (float) $value;
                 $progressClass = $column['progressClass'] ?? 'primary';
-                if (is_callable($column['progressClass'])) {
-                    $progressClass = call_user_func($column['progressClass'], $value, $item, $rowIndex);
+                if (\is_callable($column['progressClass'])) {
+                    $progressClass = \call_user_func($column['progressClass'], $value, $item, $rowIndex);
                 }
+
                 return '<div class="progress" style="height: 20px;">
                         <div class="progress-bar bg-' . htmlspecialchars($progressClass, ENT_QUOTES, 'UTF-8') . '"
                              role="progressbar"
@@ -494,24 +499,27 @@ class HealthCheckHelper
 
             case 'icon':
                 $iconClass = $column['iconClass'] ?? 'fas fa-info';
-                if (is_callable($column['iconClass'])) {
-                    $iconClass = call_user_func($column['iconClass'], $value, $item, $rowIndex);
+                if (\is_callable($column['iconClass'])) {
+                    $iconClass = \call_user_func($column['iconClass'], $value, $item, $rowIndex);
                 }
+
                 return '<i class="' . htmlspecialchars($iconClass, ENT_QUOTES, 'UTF-8') . '" aria-hidden="true"></i>';
 
             case 'custom':
-                if (isset($column['renderer']) && is_callable($column['renderer'])) {
-                    return call_user_func($column['renderer'], $value, $item, $rowIndex, $column);
+                if (isset($column['renderer']) && \is_callable($column['renderer'])) {
+                    return \call_user_func($column['renderer'], $value, $item, $rowIndex, $column);
                 }
+
                 return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 
             case 'text':
             default:
                 $maxLength = $column['maxLength'] ?? null;
-                $text = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                $text      = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
                 if ($maxLength && strlen($text) > $maxLength) {
                     $text = substr($text, 0, $maxLength) . '...';
                 }
+
                 return $text;
         }
     }
