@@ -22,7 +22,7 @@ use Joomla\CMS\Layout\FileLayout;
  *
  * @since  __DEPLOY_VERSION__
  */
-abstract class Healthchecks
+abstract class HealthChecks
 {
     /**
      * Method to generate html code for a list of gauges
