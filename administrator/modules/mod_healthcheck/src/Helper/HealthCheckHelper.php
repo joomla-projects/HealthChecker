@@ -106,8 +106,7 @@ class HealthCheckHelper
         array $defaults,
         array $requiredFields,
         ?CMSApplication $application = null
-    )
-    {
+    ) {
         if ($application == null) {
             $application = Factory::getApplication();
         }

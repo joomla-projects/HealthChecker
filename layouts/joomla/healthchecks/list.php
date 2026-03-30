@@ -42,13 +42,12 @@ $itemTag = ($wrapperTag === 'div') ? 'div' : 'li';
 <<?php echo $wrapperTag; ?> class="<?php echo implode(' ', $cssClasses); ?>"<?php echo $listId ? ' id="' . htmlspecialchars($listId, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
     <?php foreach ($items as $index => $item) : ?>
         <<?php echo $itemTag; ?><?php echo $itemClass ? ' class="' . htmlspecialchars($itemClass, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
-            <?php 
+            <?php
             // Use custom renderer if provided
             if ($renderer && is_callable($renderer)) {
                 echo call_user_func($renderer, $item, $index);
-            }
-            // Fallback to basic rendering
-            else {
+            } else {
+                // Fallback to basic rendering
                 if (is_object($item)) {
                     echo htmlspecialchars($item->title ?? $item->name ?? $item->label ?? 'Item ' . ($index + 1), ENT_QUOTES, 'UTF-8');
                 } elseif (is_array($item)) {

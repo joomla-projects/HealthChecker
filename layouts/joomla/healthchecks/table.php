@@ -45,11 +45,11 @@ if (!empty($tableClass)) {
     $cssClasses[] = $tableClass;
 }
 ?>
-<div class="table-responsive">    
+<div class="table-responsive">
     <table class="<?php echo implode(' ', $cssClasses); ?>"<?php echo $tableId ? ' id="' . htmlspecialchars($tableId, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
         <?php if ($caption) : ?>
             <caption><?php echo htmlspecialchars($caption, ENT_QUOTES, 'UTF-8'); ?></caption>
-        <?php endif; ?>        
+        <?php endif; ?>
         <thead>
             <tr>
                 <?php foreach ($columns as $column) : ?>
@@ -66,7 +66,7 @@ if (!empty($tableClass)) {
                     </th>
                 <?php endforeach; ?>
             </tr>
-        </thead>        
+        </thead>
         <tbody>
             <?php foreach ($data as $rowIndex => $item) : ?>
                 <tr>
@@ -80,7 +80,7 @@ if (!empty($tableClass)) {
                         ?>
                         <td<?php echo $cellClass ? ' class="' . htmlspecialchars($cellClass, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>
                             <?php echo $align ? ' style="text-align: ' . htmlspecialchars($align, ENT_QUOTES, 'UTF-8') . ';"' : ''; ?>>
-                            <?php 
+                            <?php
                             if ($helper && method_exists($helper, 'renderTableCellContent')) {
                                 echo $helper->renderTableCellContent($column, $item, $rowIndex);
                             } else {
@@ -94,6 +94,6 @@ if (!empty($tableClass)) {
                     <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
-        </tbody>        
+        </tbody>
     </table>
 </div>

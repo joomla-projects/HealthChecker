@@ -9,7 +9,7 @@
  */
 
 defined('_JEXEC') or die;
-?>
-<?php if (isset($displayData['info'])) : ?>
-    <?php echo $displayData['info']; ?>
-<?php endif; ?>
+
+if (isset($displayData['info'])) {
+    echo $displayData['info'];
+}
