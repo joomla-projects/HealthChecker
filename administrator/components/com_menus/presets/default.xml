@@ -324,7 +324,7 @@
 		title="MOD_MENU_HEALTHCHECK"
 		type="component"
 		element="com_cpanel"
-		class="class:heartbeat"
+		class="class:heart"
 		link="index.php?option=com_cpanel&amp;view=cpanel&amp;dashboard=healthcheck"
 	/>
 
