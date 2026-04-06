@@ -29,8 +29,8 @@
 }
 
 .healthcheck-filters .btn-group .btn:last-child {
-  border-top-right-radius: .375rem;
-  border-bottom-right-radius: .375rem;
+  border-start-end-radius: .375rem;
+  border-end-end-radius: .375rem;
 }
 
 .healthcheck-filters .btn:hover {
