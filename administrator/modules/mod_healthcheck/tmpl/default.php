@@ -18,8 +18,7 @@ use Joomla\CMS\Layout\LayoutHelper;
 $wa = $app->getDocument()->getWebAssetManager();
 $wa->useScript('core')
     ->useScript('bootstrap.dropdown');
-//$wa->registerAndUseScript('mod_healthcheck', 'mod_healthcheck/healthcheck.min.js', ['relative' => true, 'version' => 'auto'], ['type' => 'module']);
-// use mod_quickicon script if buttons are shown
+$wa->registerAndUseScript('mod_quickicon', 'mod_quickicon/quickicon.min.js', ['relative' => true, 'version' => 'auto'], ['type' => 'module']);
 
 // Register and use the filter assets
 $wa->registerAndUseScript('mod_healthcheck.filter', 'mod_healthcheck/healthcheck-filter.js', [], ['defer' => true], [])
