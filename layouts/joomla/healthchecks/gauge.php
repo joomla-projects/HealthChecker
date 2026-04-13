@@ -10,7 +10,10 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+
+Factory::getApplication()->getLanguage()->load('mod_healthcheck', JPATH_ADMINISTRATOR);
 
 // Get gauge parameters with defaults
 $id      = empty($displayData['id']) ? '' : (' id="' . $displayData['id'] . '"');
@@ -59,7 +62,7 @@ if ($hasLink) {
     if (!empty($linktitle)) {
         $linkAttributes .= ' title="' . htmlspecialchars($linktitle) . '"';
     } else {
-        $linkAttributes .= ' title="' . htmlspecialchars($label . ' - ' . $score . ' ' . $unit) . '"';
+        $linkAttributes .= ' title="' . htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_LINK_TITLE', $label, $score, $unit)) . '"';
     }
 }
 
@@ -89,14 +92,14 @@ $center = $size / 2;
 <li class="healthcheck-gauge"<?php echo $id; ?>
      role="img"
      tabindex="<?php echo $hasLink ? '-1' : '0'; ?>"
-     aria-label="<?php echo htmlspecialchars($label . ' gauge showing ' . $score . ' ' . $unit . ' out of ' . $score_max . ($hasLink ? '. Click to view details.' : '')); ?>"
+     aria-label="<?php echo htmlspecialchars(Text::sprintf($hasLink ? 'MOD_HEALTHCHECK_GAUGE_ITEM_ARIA_LABEL_LINK' : 'MOD_HEALTHCHECK_GAUGE_ITEM_ARIA_LABEL', $label, $score, $unit, $score_max)); ?>"
      data-score="<?php echo $score; ?>"
      data-max="<?php echo $score_max; ?>"
      data-percentage="<?php echo number_format($percentage, 1); ?>">
 
     <?php if ($hasLink) : ?>
         <a <?php echo $linkAttributes; ?> class="gauge-link d-block text-decoration-none"
-           aria-label="<?php echo htmlspecialchars(($linktitle ?: $label) . ' - ' . $score . ' ' . $unit . '. Click for details.'); ?>">
+           aria-label="<?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_LINK_ARIA_LABEL', $linktitle ?: $label, $score, $unit)); ?>">
     <?php endif; ?>
 
     <div class="gauge-container text-center">
@@ -120,8 +123,8 @@ $center = $size / 2;
                  aria-hidden="true"
                  focusable="false">
 
-                <title><?php echo htmlspecialchars($label . ' gauge: ' . $score . ' ' . $unit); ?></title>
-                <desc>A circular progress indicator showing <?php echo $score; ?> <?php echo htmlspecialchars($unit); ?> out of a maximum of <?php echo $score_max; ?> <?php echo htmlspecialchars($unit); ?>. This represents <?php echo number_format($percentage, 1); ?>% of the total range.</desc>
+                <title><?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_SVG_TITLE', $label, $score, $unit)); ?></title>
+                <desc><?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_SVG_DESC', $score, $unit, $score_max, number_format($percentage, 1))); ?></desc>
 
                 <!-- Background circle -->
                 <circle
@@ -177,20 +180,20 @@ $center = $size / 2;
 
             <!-- Screen reader accessible description -->
             <div id="gauge-description-<?php echo md5($label); ?>" class="sr-only">
-                Score: <?php echo $score; ?> <?php echo htmlspecialchars($unit); ?> out of <?php echo $score_max; ?> <?php echo htmlspecialchars($unit); ?>.
-                This represents <?php echo number_format($percentage, 1); ?>% of the range from <?php echo $score_min; ?> to <?php echo $score_max; ?>.
+                <?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_SR_SCORE', $score, $unit, $score_max)); ?>
+                <?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_SR_RANGE', number_format($percentage, 1), $score_min, $score_max)); ?>
                 <?php if ($score >= $score_threshold_success) : ?>
-                    Status: Excellent performance.
+                    <?php echo htmlspecialchars(Text::_('MOD_HEALTHCHECK_GAUGE_STATUS_EXCELLENT')); ?>
                 <?php elseif ($score >= $score_threshold_warning) : ?>
-                    Status: Good performance with room for improvement.
+                    <?php echo htmlspecialchars(Text::_('MOD_HEALTHCHECK_GAUGE_STATUS_GOOD')); ?>
                 <?php else : ?>
-                    Status: Performance needs attention.
+                    <?php echo htmlspecialchars(Text::_('MOD_HEALTHCHECK_GAUGE_STATUS_ATTENTION')); ?>
                 <?php endif; ?>
             </div>
 
             <!-- Percentage indicator -->
             <div class="gauge-percentage small text-muted mt-1" aria-hidden="true">
-                <?php echo number_format($percentage, 2); ?>% of range
+                <?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_PERCENT_OF_RANGE', number_format($percentage, 2))); ?>
             </div>
         </div>
 
@@ -201,8 +204,8 @@ $center = $size / 2;
         <!-- Raw data display (optional, for debugging) -->
         <?php if (defined('JDEBUG') && !JDEBUG) : ?>
             <div class="gauge-debug small mt-2">
-                Range: <?php echo $score_min; ?>-<?php echo $score_max; ?> |
-                Thresholds: <?php echo $score_threshold_error; ?>/<?php echo $score_threshold_warning; ?>/<?php echo $score_threshold_success; ?>
+                <?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_DEBUG_RANGE', $score_min, $score_max)); ?> |
+                <?php echo htmlspecialchars(Text::sprintf('MOD_HEALTHCHECK_GAUGE_DEBUG_THRESHOLDS', $score_threshold_error, $score_threshold_warning, $score_threshold_success)); ?>
             </div>
         <?php endif; ?>
     </div>
