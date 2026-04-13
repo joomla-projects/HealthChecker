@@ -412,7 +412,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     public function onAjaxUserMaintenance(): void
     {
-        $app = Factory::getApplication();
+        $app           = Factory::getApplication();
         $app->mimeType = 'application/json';
         $app->setHeader('Content-Type', 'application/json; charset=utf-8');
 
