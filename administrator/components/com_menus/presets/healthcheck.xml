@@ -7,7 +7,7 @@
 	<menuitem
 		title="MOD_MENU_HEALTHCHECK_PARENT_OVERVIEW"
 		type="heading"
-		icon="heart"
+		icon="heartbeat"
 		>
 		<menuitem
 			title="MOD_MENU_HEALTHCHECK_DASHBOARD"
