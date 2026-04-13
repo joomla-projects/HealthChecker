@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     Joomla.Plugin
  * @subpackage  Healthcheck.UserMaintenance
@@ -67,7 +68,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
 
         if (
             $context !== $this->params->get('context', 'usermanagement')
-//            || !$this->getApplication()->getIdentity()->authorise('core.admin', 'com_admin')
+            // || !$this->getApplication()->getIdentity()->authorise('core.admin', 'com_admin')
         ) {
             $this->handleErrorMsg('onHealthcheckGetIcons wrong context: ' . $context, 'WARNING');
             return;
@@ -116,7 +117,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     protected function getInactiveUsers(): array
     {
-        $item = array();
+        $item = [];
 
         if ($this->params->get('inactiveUsers', '1') == '1') {
             try {
@@ -139,7 +140,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 $db->setQuery($query);
 
                 $inactive = $db->loadObject();
-                if (is_object($inactive)) {
+                if (\is_object($inactive)) {
                     $number = $inactive->number;
                 } else {
                     $number = 0;
@@ -165,7 +166,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     protected function getNeverLoggedinUsers(): array
     {
-        $item = array();
+        $item = [];
 
         if ($this->params->get('neverloggedinUsers', '1') == '1') {
             try {
@@ -184,7 +185,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 $db->setQuery($query);
 
                 $neverLoggedin = $db->loadObject();
-                if (is_object($neverLoggedin)) {
+                if (\is_object($neverLoggedin)) {
                     $number = $neverLoggedin->number;
                 } else {
                     $number = 0;
@@ -210,7 +211,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     protected function getUnactivatedUsers(): array
     {
-        $item = array();
+        $item = [];
 
         if ($this->params->get('unactivatedUsers', '1') == '1') {
             try {
@@ -229,7 +230,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 $db->setQuery($query);
 
                 $unactivated = $db->loadObject();
-                if (is_object($unactivated)) {
+                if (\is_object($unactivated)) {
                     $number = $unactivated->number;
                 } else {
                     $number = 0;
@@ -255,7 +256,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     protected function getOrphanUsers(): array
     {
-        $item = array();
+        $item = [];
 
         if ($this->params->get('orphanUsers', '1') == '1') {
             try {
@@ -277,7 +278,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 $db->setQuery($query);
 
                 $orphan = $db->loadObject();
-                if (is_object($orphan)) {
+                if (\is_object($orphan)) {
                     $number = $orphan->number;
                 } else {
                     $number = 0;
@@ -303,7 +304,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     protected function getNonMFAUsers(): array
     {
-        $item = array();
+        $item = [];
 
         if ($this->params->get('nonMFAUsers', '1') == '1') {
             try {
@@ -326,7 +327,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 $db->setQuery($query);
 
                 $nonmfa = $db->loadObject();
-                if (is_object($nonmfa)) {
+                if (\is_object($nonmfa)) {
                     $number = $nonmfa->number;
                 } else {
                     $number = 0;
@@ -352,7 +353,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
      */
     protected function getPrivilegedUsers(): array
     {
-        $item = array();
+        $item = [];
 
         if ($this->params->get('privilegedUsers', '1') == '1') {
             try {
@@ -385,7 +386,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 $db->setQuery($query);
 
                 $privileged = $db->loadObject();
-                if (is_object($privileged)) {
+                if (\is_object($privileged)) {
                     $number = $privileged->number;
                 } else {
                     $number = 0;
@@ -418,7 +419,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
         try {
             $this->loadLanguage();
 
-            $checks = [];
+            $checks                       = [];
             $checks['inactiveUsers']      = $this->getInactiveUsers();
             $checks['neverloggedinUsers'] = $this->getNeverLoggedinUsers();
             $checks['unactivatedUsers']   = $this->getUnactivatedUsers();
@@ -429,7 +430,7 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
             $response = [
                 'success'   => true,
                 'data'      => $checks,
-                'count'     => count($checks),
+                'count'     => \count($checks),
                 'timestamp' => date('Y-m-d H:i:s'),
             ];
         } catch (\Exception $e) {
@@ -494,19 +495,19 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
     protected function handleErrorMsg(string $msg, string $msgLevel): void
     {
         $msgContext = '[' . $this->_type . '-' . $this->_name . ']';
-        $logging = $this->params->get('logging', 0);    // How to handle errors
+        $logging    = $this->params->get('logging', 0);    // How to handle errors
         switch ($logging) {
-            case 3 : // enqueue Message
+            case 3: // enqueue Message
                 Factory::getApplication()->enqueueMessage($msgContext . ' ' . $msg, $msgLevel);
                 break;
-            case 2 : // log in JoomlaLog
+            case 2: // log in JoomlaLog
                 Log::add($msgContext . ' ' . $msg, Log::ERROR, 'plg_healthcheck_usermaintenance');
                 break;
-            case 1 : // log in PHP error log
+            case 1: // log in PHP error log
                 error_log($msgContext . ' ' . $msg, 0);
                 break;
-            case 0 :
-            default :
+            case 0:
+            default:
                 // Do not log anywhere
         }
     }
