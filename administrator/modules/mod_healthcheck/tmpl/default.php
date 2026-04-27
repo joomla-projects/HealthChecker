@@ -100,7 +100,7 @@ $has_data = !empty($gauges_html) || !empty($buttons_html) || !empty($lists_html)
     <?php else : ?>
         <?php echo LayoutHelper::render('joomla.content.emptystate_module', [
             'textPrefix' => 'MOD_HEALTHCHECK',
-            'icon'       => 'icon-health',
+            'icon'       => 'icon-heart',
             'title'      => 'MOD_HEALTHCHECK_NO_MATCHING_RESULTS'
         ]); ?>
     <?php endif; ?>
