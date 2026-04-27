@@ -154,7 +154,7 @@
 }
 
 /* High contrast mode support */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .healthcheck-gauge {
     border: 2px solid;
   }
