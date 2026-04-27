@@ -31,6 +31,7 @@ $text = empty($displayData['text']) ? '' : ('<span class="j-links-link">' . $dis
 // Make the class string
 
 // depending on status, determine additional class
+$class        = '';
 $filterStatus = 'healthy'; // Default to "healthy"
 if (isset($displayData['status'])) {
     switch ($displayData['status']) {

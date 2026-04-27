@@ -51,7 +51,7 @@ $has_data = !empty($gauges_html) || !empty($buttons_html) || !empty($lists_html)
                 <?php echo Text::_('MOD_HEALTHCHECK_FILTER_CRITICAL'); ?>
             </button>
         </div>
-        <button type="button" class="btn btn-primary">
+        <button type="button" class="btn btn-sm btn-primary">
             <i class="icon-refresh"></i>
         </button>
     </div>
@@ -100,7 +100,7 @@ $has_data = !empty($gauges_html) || !empty($buttons_html) || !empty($lists_html)
     <?php else : ?>
         <?php echo LayoutHelper::render('joomla.content.emptystate_module', [
             'textPrefix' => 'MOD_HEALTHCHECK',
-            'icon'       => 'icon-health',
+            'icon'       => 'icon-heart',
             'title'      => 'MOD_HEALTHCHECK_NO_MATCHING_RESULTS'
         ]); ?>
     <?php endif; ?>

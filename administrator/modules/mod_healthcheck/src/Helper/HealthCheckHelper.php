@@ -123,12 +123,18 @@ class HealthCheckHelper
 
             PluginHelper::importPlugin('healthcheck');
 
-            $arrays = (array) $application->getDispatcher()->dispatch(
+            $eventResult = $application->getDispatcher()->dispatch(
                 $eventName,
                 new HealthChecksEvent($eventName, ['context' => $context])
             );
 
-            foreach ($arrays as $response) {
+            $result = $eventResult->getArgument('result');
+
+            if (empty($result)) {
+                return [];
+            }
+
+            foreach ($result as $response) {
                 if (!\is_array($response)) {
                     continue;
                 }
