@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="healthcheck" method="upgrade">
+	<name>plg_healthcheck_sslcertificate</name>
+	<author>Joomla! Project</author>
+	<creationDate>2026-10</creationDate>
+	<copyright>(C) 2026 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>6.2.0</version>
+	<description>PLG_HEALTHCHECK_SSLCERTIFICATE_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Healthcheck\SslCertificate</namespace>
+	<files>
+		<folder plugin="sslcertificate">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_sslcertificate.ini</language>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_sslcertificate.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="context"
+					type="text"
+					label="PLG_HEALTHCHECK_SSLCERTIFICATE_GROUP_LABEL"
+					description="PLG_HEALTHCHECK_SSLCERTIFICATE_GROUP_DESC"
+					default="general"
+				/>
+				<field
+					name="warning_days"
+					type="number"
+					label="PLG_HEALTHCHECK_SSLCERTIFICATE_WARNING_DAYS_LABEL"
+					description="PLG_HEALTHCHECK_SSLCERTIFICATE_WARNING_DAYS_DESC"
+					default="30"
+					min="1"
+					max="365"
+					filter="integer"
+				/>
+				<field
+					name="danger_days"
+					type="number"
+					label="PLG_HEALTHCHECK_SSLCERTIFICATE_DANGER_DAYS_LABEL"
+					description="PLG_HEALTHCHECK_SSLCERTIFICATE_DANGER_DAYS_DESC"
+					default="7"
+					min="1"
+					max="365"
+					filter="integer"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
