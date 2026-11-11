@@ -245,6 +245,7 @@ class ExtensionHelper
         ['plugin', 'tags', 'finder', 0],
 
         // Core plugin extensions - healthcheck
+        ['plugin', 'frontenderrors', 'healthcheck', 0],
         ['plugin', 'usermaintenance', 'healthcheck', 0],
 
         // Core plugin extensions - installer
@@ -305,6 +306,7 @@ class ExtensionHelper
         ['plugin', 'cache', 'system', 0],
         ['plugin', 'debug', 'system', 0],
         ['plugin', 'fields', 'system', 0],
+        ['plugin', 'frontenderrors', 'system', 0],
         ['plugin', 'guidedtours', 'system', 0],
         ['plugin', 'highlight', 'system', 0],
         ['plugin', 'httpheaders', 'system', 0],

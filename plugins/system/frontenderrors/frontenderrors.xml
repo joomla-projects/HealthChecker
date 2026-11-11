@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="system" method="upgrade">
+	<name>plg_system_frontenderrors</name>
+	<author>Joomla! Project</author>
+	<creationDate>2026-10</creationDate>
+	<copyright>(C) 2026 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>6.2.0</version>
+	<description>PLG_SYSTEM_FRONTENDERRORS_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\System\Frontenderrors</namespace>
+	<files>
+		<folder plugin="frontenderrors">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_system_frontenderrors.ini</language>
+		<language tag="en-GB">language/en-GB/plg_system_frontenderrors.sys.ini</language>
+	</languages>
+</extension>

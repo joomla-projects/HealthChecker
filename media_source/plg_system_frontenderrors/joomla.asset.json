@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "plg_system_frontenderrors",
+  "version": "6.2.0",
+  "description": "Joomla CMS",
+  "license": "GPL-2.0-or-later",
+  "assets": [
+    {
+      "name": "plg_system_frontenderrors.collector",
+      "type": "script",
+      "uri": "plg_system_frontenderrors/collector.min.js",
+      "weight": 1,
+      "dependencies": [],
+      "attributes": {}
+    }
+  ]
+}

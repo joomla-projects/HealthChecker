@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="healthcheck" method="upgrade">
+	<name>plg_healthcheck_frontenderrors</name>
+	<author>Joomla! Project</author>
+	<creationDate>2026-10</creationDate>
+	<copyright>(C) 2026 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>6.2.0</version>
+	<description>PLG_HEALTHCHECK_FRONTENDERRORS_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Healthcheck\Frontenderrors</namespace>
+	<files>
+		<folder plugin="frontenderrors">services</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_frontenderrors.ini</language>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_frontenderrors.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="context"
+					type="text"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_GROUP_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_GROUP_DESC"
+					default="general"
+				/>
+				<field
+					name="mode"
+					type="list"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_MODE_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_MODE_DESC"
+					default="ongoing"
+					validate="options"
+					>
+					<option value="ongoing">PLG_HEALTHCHECK_FRONTENDERRORS_MODE_VALUE_ONGOING</option>
+					<option value="timed">PLG_HEALTHCHECK_FRONTENDERRORS_MODE_VALUE_TIMED</option>
+				</field>
+				<field
+					name="collect_until"
+					type="calendar"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_UNTIL_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_UNTIL_DESC"
+					format="%Y-%m-%d"
+					showtime="false"
+					filter="raw"
+					showon="mode:timed"
+				/>
+				<field
+					name="collect_console"
+					type="radio"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_CONSOLE_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_CONSOLE_DESC"
+					layout="joomla.form.field.radio.switcher"
+					default="0"
+					filter="boolean"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="sample_rate"
+					type="number"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_SAMPLE_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_SAMPLE_DESC"
+					default="100"
+					min="1"
+					max="100"
+					filter="integer"
+				/>
+				<field
+					name="retention_days"
+					type="number"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_RETENTION_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_RETENTION_DESC"
+					default="30"
+					min="1"
+					max="365"
+					filter="integer"
+				/>
+				<field
+					name="threshold_page"
+					type="number"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_THRESHOLD_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_THRESHOLD_DESC"
+					default="3"
+					min="1"
+					filter="integer"
+				/>
+				<field
+					name="period_days"
+					type="number"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_PERIOD_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_PERIOD_DESC"
+					default="7"
+					min="1"
+					max="90"
+					filter="integer"
+				/>
+				<field
+					name="ignore_patterns"
+					type="textarea"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_IGNORE_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_IGNORE_DESC"
+					rows="5"
+					filter="string"
+				/>
+				<field
+					name="scan_limit"
+					type="number"
+					label="PLG_HEALTHCHECK_FRONTENDERRORS_SCANLIMIT_LABEL"
+					description="PLG_HEALTHCHECK_FRONTENDERRORS_SCANLIMIT_DESC"
+					default="25"
+					min="5"
+					max="100"
+					filter="integer"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
