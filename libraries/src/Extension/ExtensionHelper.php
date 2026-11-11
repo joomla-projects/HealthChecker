@@ -246,6 +246,7 @@ class ExtensionHelper
 
         // Core plugin extensions - healthcheck
         ['plugin', 'usermaintenance', 'healthcheck', 0],
+        ['plugin', 'siteinfo', 'healthcheck', 0],
 
         // Core plugin extensions - installer
         ['plugin', 'folderinstaller', 'installer', 0],
