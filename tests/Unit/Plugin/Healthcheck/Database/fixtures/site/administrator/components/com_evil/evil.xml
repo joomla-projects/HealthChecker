@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+	<name>com_evil</name>
+	<install>
+		<sql>
+			<file driver="mysql">../../../outside.sql</file>
+		</sql>
+	</install>
+</extension>

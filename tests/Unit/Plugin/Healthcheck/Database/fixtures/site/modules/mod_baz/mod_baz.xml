@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" client="site" method="upgrade">
+	<name>mod_baz</name>
+	<install>
+		<sql>
+			<file driver="mysql">sql/missing.sql</file>
+		</sql>
+	</install>
+</extension>

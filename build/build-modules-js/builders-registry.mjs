@@ -63,6 +63,7 @@ export const builders = [
   'plg_editors_codemirror',
   'plg_editors_none',
   'plg_editors_tinymce',
+  'plg_healthcheck_database',
   'plg_installer_folderinstaller',
   'plg_installer_packageinstaller',
   'plg_installer_urlinstaller',

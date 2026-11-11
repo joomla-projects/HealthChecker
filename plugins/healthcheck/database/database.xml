@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="healthcheck" method="upgrade">
+	<name>plg_healthcheck_database</name>
+	<author>Joomla! Project</author>
+	<creationDate>2026-10</creationDate>
+	<copyright>(C) 2026 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>6.2.0</version>
+	<description>PLG_HEALTHCHECK_DATABASE_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Healthcheck\Database</namespace>
+	<files>
+		<folder plugin="database">services</folder>
+		<folder>src</folder>
+		<folder>tmpl</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_database.ini</language>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_database.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="context"
+					type="text"
+					label="PLG_HEALTHCHECK_DATABASE_GROUP_LABEL"
+					description="PLG_HEALTHCHECK_DATABASE_GROUP_DESC"
+					default="general"
+				/>
+				<field
+					name="check_zerodates"
+					type="radio"
+					label="PLG_HEALTHCHECK_DATABASE_CHECK_ZERODATES_LABEL"
+					description="PLG_HEALTHCHECK_DATABASE_CHECK_ZERODATES_DESC"
+					layout="joomla.form.field.radio.switcher"
+					default="1"
+					filter="boolean"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="check_unused"
+					type="radio"
+					label="PLG_HEALTHCHECK_DATABASE_CHECK_UNUSED_LABEL"
+					description="PLG_HEALTHCHECK_DATABASE_CHECK_UNUSED_DESC"
+					layout="joomla.form.field.radio.switcher"
+					default="1"
+					filter="boolean"
+					>
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field
+					name="refresh_hours"
+					type="number"
+					label="PLG_HEALTHCHECK_DATABASE_REFRESH_HOURS_LABEL"
+					description="PLG_HEALTHCHECK_DATABASE_REFRESH_HOURS_DESC"
+					default="24"
+					min="1"
+					max="168"
+					filter="integer"
+				/>
+				<field
+					name="time_budget"
+					type="number"
+					label="PLG_HEALTHCHECK_DATABASE_TIME_BUDGET_LABEL"
+					description="PLG_HEALTHCHECK_DATABASE_TIME_BUDGET_DESC"
+					default="5"
+					min="1"
+					max="20"
+					filter="integer"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
