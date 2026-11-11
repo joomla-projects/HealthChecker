@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="healthcheck" method="upgrade">
+	<name>plg_healthcheck_ssl</name>
+	<author>Joomla! Project</author>
+	<creationDate>2026-10</creationDate>
+	<copyright>(C) 2026 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>6.2.0</version>
+	<description>PLG_HEALTHCHECK_SSL_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Healthcheck\Ssl</namespace>
+	<files>
+		<folder plugin="ssl">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_ssl.ini</language>
+		<language tag="en-GB">language/en-GB/plg_healthcheck_ssl.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+					name="context"
+					type="text"
+					label="PLG_HEALTHCHECK_SSL_GROUP_LABEL"
+					description="PLG_HEALTHCHECK_SSL_GROUP_DESC"
+					default="security"
+				/>
+				<field
+					name="warning_days"
+					type="number"
+					label="PLG_HEALTHCHECK_SSL_WARNING_DAYS_LABEL"
+					description="PLG_HEALTHCHECK_SSL_WARNING_DAYS_DESC"
+					default="14"
+					min="1"
+					filter="integer"
+				/>
+				<field
+					name="error_days"
+					type="number"
+					label="PLG_HEALTHCHECK_SSL_ERROR_DAYS_LABEL"
+					description="PLG_HEALTHCHECK_SSL_ERROR_DAYS_DESC"
+					default="7"
+					min="0"
+					filter="integer"
+				/>
+				<field
+					name="timeout"
+					type="number"
+					label="PLG_HEALTHCHECK_SSL_TIMEOUT_LABEL"
+					description="PLG_HEALTHCHECK_SSL_TIMEOUT_DESC"
+					default="3"
+					min="1"
+					max="10"
+					filter="integer"
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
