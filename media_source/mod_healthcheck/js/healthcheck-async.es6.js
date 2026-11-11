@@ -214,6 +214,8 @@
 
       if (wrapper) {
         wrapper.setAttribute('data-healthcheck-status', STATUS_FILTER[status] || 'healthy');
+        // Let the section header and active filter catch up with the new status.
+        wrapper.dispatchEvent(new CustomEvent('healthcheck:status', { bubbles: true }));
       }
     } catch (e) {
       setAmount(amountEl, '!');

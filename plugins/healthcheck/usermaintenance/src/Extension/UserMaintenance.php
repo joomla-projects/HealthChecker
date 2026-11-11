@@ -88,12 +88,13 @@ final class UserMaintenance extends CMSPlugin implements SubscriberInterface
                 continue;
             }
             $checkResults[] = [
-                'link'   => $check['link'],
-                'icon'   => 'fas fa-users-gear',
-                'amount' => $check['result'],
-                'text'   => $check['text'],
-                'id'     => 'plg_healthcheck_usermaintenance_' . strtolower($key),
-                'status' => ($check['result'] > 0) ? 'warning' : 'success',
+                'link'    => $check['link'],
+                'icon'    => 'icon-users',
+                'section' => Text::_('PLG_HEALTHCHECK_USERMAINTENANCE_SECTION'),
+                'amount'  => $check['result'],
+                'text'    => $check['text'],
+                'id'      => 'plg_healthcheck_usermaintenance_' . strtolower($key),
+                'status'  => ($check['result'] > 0) ? 'warning' : 'success',
             ];
         }
 

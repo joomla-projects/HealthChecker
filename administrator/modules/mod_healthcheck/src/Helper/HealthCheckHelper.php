@@ -190,6 +190,7 @@ class HealthCheckHelper
             'access'                  => true,
             'class'                   => null,
             'group'                   => 'general',
+            'section'                 => null,
         ];
 
         $requiredFields = [
@@ -233,6 +234,7 @@ class HealthCheckHelper
             'access'      => true,
             'status'      => null,
             'group'       => 'general',
+            'section'     => null,
         ];
 
         $requiredFields = [
@@ -266,10 +268,11 @@ class HealthCheckHelper
     public function getLists(Registry $params, ?CMSApplication $application = null)
     {
         $defaults = [
-            'items'  => null,
-            'access' => true,
-            'class'  => null,
-            'group'  => 'general',
+            'items'   => null,
+            'access'  => true,
+            'class'   => null,
+            'group'   => 'general',
+            'section' => null,
         ];
 
         $requiredFields = [
@@ -308,6 +311,7 @@ class HealthCheckHelper
             'access'  => true,
             'class'   => null,
             'group'   => 'general',
+            'section' => null,
         ];
 
         $requiredFields = [
@@ -389,5 +393,132 @@ class HealthCheckHelper
             $requiredFields,
             $application
         );
+    }
+
+    /**
+     * Group items of every type into panels by their optional 'section' title.
+     * Panels keep the order in which their title first appears (gauges, then buttons, lists, tables);
+     * items without a usable section go into one panel titled $otherLabel, always last.
+     *
+     * @param   array   $gauges      Gauge items
+     * @param   array   $buttons     Icon items
+     * @param   array   $lists       List items
+     * @param   array   $tables      Table items
+     * @param   string  $otherLabel  Title of the panel for items without a section
+     *
+     * @return  array  List of ['title' => string, 'gauges' => array, 'buttons' => array, 'lists' => array, 'tables' => array]
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public static function groupBySection(array $gauges, array $buttons, array $lists, array $tables, string $otherLabel): array
+    {
+        $empty    = ['gauges' => [], 'buttons' => [], 'lists' => [], 'tables' => []];
+        $sections = [];
+        $other    = ['title' => $otherLabel] + $empty;
+
+        foreach (['gauges' => $gauges, 'buttons' => $buttons, 'lists' => $lists, 'tables' => $tables] as $type => $items) {
+            foreach ($items as $item) {
+                $title = \is_array($item) && \is_string($item['section'] ?? null) ? trim($item['section']) : '';
+
+                if ($title === '') {
+                    $other[$type][] = $item;
+
+                    continue;
+                }
+
+                $sections[$title] ??= ['title' => $title] + $empty;
+                $sections[$title][$type][] = $item;
+            }
+        }
+
+        $result = array_values($sections);
+
+        if ($other['gauges'] || $other['buttons'] || $other['lists'] || $other['tables']) {
+            $result[] = $other;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Summarise a panel: how many items are critical, warning and healthy, and the worst of them.
+     * Statuses are mapped exactly as the layouts map them; a gauge without a status takes it from its score.
+     *
+     * @param   array  $section  One panel from groupBySection()
+     *
+     * @return  array  ['worst' => string, 'counts' => ['critical' => int, 'warning' => int, 'healthy' => int]]
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public static function summarise(array $section): array
+    {
+        $counts = ['critical' => 0, 'warning' => 0, 'healthy' => 0];
+
+        foreach (['gauges', 'buttons', 'lists', 'tables'] as $type) {
+            foreach ($section[$type] ?? [] as $item) {
+                $counts[$type === 'gauges' ? self::gaugeStatus($item) : self::itemStatus($item['status'] ?? null)]++;
+            }
+        }
+
+        return [
+            'worst'  => $counts['critical'] ? 'critical' : ($counts['warning'] ? 'warning' : 'healthy'),
+            'counts' => $counts,
+        ];
+    }
+
+    /**
+     * Accordion id that is unique for every call in this request, so a module rendered twice never repeats an id.
+     *
+     * @param   int  $moduleId  The module id
+     *
+     * @return  string
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public static function accordionId(int $moduleId): string
+    {
+        static $counter = 0;
+
+        return 'healthcheck-sections-' . $moduleId . '-' . (++$counter);
+    }
+
+    /**
+     * Map an item status the way the icon, list and table layouts do.
+     *
+     * @param   mixed  $status  The item's status
+     *
+     * @return  string  critical, warning or healthy
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private static function itemStatus(mixed $status): string
+    {
+        return match ($status) {
+            'error'   => 'critical',
+            'warning' => 'warning',
+            default   => 'healthy',
+        };
+    }
+
+    /**
+     * Map a gauge status the way the gauge layout does: an explicit status wins, otherwise the score decides.
+     *
+     * @param   array  $gauge  Gauge item
+     *
+     * @return  string  critical, warning or healthy
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private static function gaugeStatus(array $gauge): string
+    {
+        if (isset($gauge['status'])) {
+            return self::itemStatus($gauge['status']);
+        }
+
+        $score   = (float) ($gauge['score'] ?? 0);
+        $warning = (float) ($gauge['score_threshold_warning'] ?? 50);
+        $success = (float) ($gauge['score_threshold_success'] ?? 90);
+
+        return $score < $warning ? 'critical' : ($score < $success ? 'warning' : 'healthy');
     }
 }
